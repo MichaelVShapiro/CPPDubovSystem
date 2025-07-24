@@ -29,6 +29,7 @@
 #include <stdio.h>
 #include <queue>
 #include <vector>
+#include <memory>
 #include "Player.hpp"
 #include "LinkedList.hpp"
 #include "trf util/trf.hpp"

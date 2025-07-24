@@ -105,7 +105,7 @@ void CPPDubovSystem::BakuAcceleration::accelerate() {
         // get number of players in group
         int group_count = abs(group_bounds[i].second - group_bounds[i].first);
         // get upper half players
-        int upper_half = (int) floor(((double) group_count) / 2.0);
+        int upper_half = (int) std::floor(((double) group_count) / 2.0);
         for(int z = group_bounds[i].first; z < upper_half; z++) {
             (*this->players)[z].addPoints(virtual_points);
         }

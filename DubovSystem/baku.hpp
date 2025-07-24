@@ -23,6 +23,7 @@
 #define baku_hpp
 
 #include <stdio.h>
+#include <cmath>
 #include "Player.hpp"
 
 /// This file is responsible for initializaing the "virtual points" for the baku acceleration

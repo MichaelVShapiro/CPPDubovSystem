@@ -24,6 +24,7 @@
 
 #include <stdio.h>
 #include <vector>
+#include <memory>
 #include "trf util/trf.hpp"
 #include "Tournament.hpp"
 #include "Player.hpp"
