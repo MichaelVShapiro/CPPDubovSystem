@@ -23,7 +23,7 @@
 #define Tournament_hpp
 
 #ifndef CPPDUBOVSYSTEM_VERSION
-#define CPPDUBOVSYSTEM_VERSION 2.0
+#define CPPDUBOVSYSTEM_VERSION 2.1
 #endif
 
 #include <stdio.h>
@@ -234,6 +234,10 @@ private:
      * Just to record the current round globaly
      */
     int current_round = 0;
+    /**
+     * Whether to make round 1 top board white
+     */
+    bool round1_top_board_white = true;
     
     /**
      * Divides a given group into to separate subgroups, both being players who are due white and black
@@ -382,6 +386,10 @@ public:
      * Adds a player (through std::move) to the list of players in the tournament
      */
     void addPlayer(Player &&p);
+    /**
+     * This strictly applies to round 1 only. This determines if the top player gets white
+     */
+    void setRound1Color(bool make_white);
     /**
      * Gets all registered players in the tournament
      */

@@ -14,9 +14,9 @@ A simple pairing engine that generates pairings via the FIDE Swiss Dubov system.
 
 ## About CPPDubovSystem
 
-CPPDubovSystem (**current version 2.0**) is a framework for generating pairings using the FIDE Swiss Dubov algorithm. It is coded entirely in C++.
+CPPDubovSystem (**current version 2.1**) is a framework for generating pairings using the FIDE Swiss Dubov algorithm. It is coded entirely in C++.
 
-This framework follows all the rules written [here](https://handbook.fide.com/chapter/C040401202507). I reccomend for you to [see also](http://www.rrweb.org/javafo/C04.pdf). Please note that this has **NOT YET BEEN APPROVED** by FIDE, however it will be sent to FIDE at one point for approval. Follow this repository for updates!
+This framework follows all the rules written [here](https://handbook.fide.com/chapter/C040401202602). I reccomend for you to [see also](http://www.rrweb.org/javafo/C04.pdf). Please note that this has **NOT YET BEEN APPROVED** by FIDE, however it will be sent to FIDE at one point for approval. Follow this repository for updates!
 
 ## Installation
 
@@ -24,6 +24,15 @@ The easiest way to install CPPDubovSystem is to download this github repository,
 
 ```console
 user@user:~$ chmod +x build.sh; ./build.sh
+```
+
+Alternatively, you can use CMake to install this framework:
+
+```console
+user@user:~$ mkdir build
+user@user:~$ cd build
+user@user:~$ cmake ..
+user@user:~$ make -j4
 ```
 
 Please note: this framework was only tested on MacOS, and no other platform. Do know however that generally speaking, this should work on any system. It doesn't require any external framework or library to work (or use anything native to MacOS in specific). I have tested this framework on my M1 Mac with Xcode 16.2.
@@ -42,13 +51,13 @@ user@user:~$ ./CPPDubovSystem --pairings "path/to/tournament_data.trf"
 
 The framework accepts a file coded in [TRF16](https://www.fide.com/FIDE/handbook/C04Annex2_TRF16.pdf) as per FIDE requirements.
 
-**Important Note**: the pairing engine **needs to know how many rounds your tournament has**. Therefore, in your TRF file, you must include the following code **TNR _round\_count_** in order for the pairing engine to capture the number of rounds in the tournament. See one of the example files in the "tests" folder.
+**Important Note**: the pairing engine **needs to know how many rounds your tournament has**. Therefore, in your TRF file, you must include the following code **TNR _round\_count_** in order for the pairing engine to capture the number of rounds in the tournament. See one of the example files in the "tests" folder. Alternatively, you can use the code **XXR _round\_count_** to set the total number of rounds in your tournament (this works similarly to JaVaFo and bbpPairings).
 
 If you would like to invoke [Baku acceleration](https://handbook.fide.com/chapter/C0405202507), make sure to set the "ACC" code in the TRF file, and set the value to "true" or "1" (see an example in "DubovSystem/tests/baku_test.trf"). If you do not intend to use acceleration, you don't have to include the "ACC" code.
 
-If you would like to signal the pairing engine that a player requests a bye (or simply not to pair it for the round) just add the following code in the TRF file: **BYE [_ID_]**. Obviously you would replace the "[ID]" part with the ID (or the pairing number/starting rank) of the player you are attempting not to pair.
+If you would like to signal the pairing engine that a player requests a bye (or simply not to pair it for the round) just add the following code in the TRF file: **BYE [_ID_]**. Obviously you would replace the "[ID]" part with the ID (or the pairing number/starting rank) of the player you are attempting not to pair. Alternatively, you can use the code **XXZ [_ID-LIST_]** which works similarly to how JaVaFo would parse it.
 
-To make forbidden pairs (or pairing restrictions), simply add the TRF code "FOR" followed by the two players you are trying to make the pairing restriction. For instance, assume Player 1 (with ID 1) has a pairing restriction to Player 2 (with ID 2). You would write down in the TRF file "FOR 1 2" to create a pairing restriction for both of those players.
+To make forbidden pairs (or pairing restrictions), simply add the TRF code "FOR" followed by the two players you are trying to make the pairing restriction. For instance, assume Player 1 (with ID 1) has a pairing restriction to Player 2 (with ID 2). You would write down in the TRF file "FOR 1 2" to create a pairing restriction for both of those players. You can also use the code "XXP" which works similarly to how JaVaFo would parse a pairing restriction.
 
 Note that "FOR" and "BYE" doesn't support a list of players. So if you have multiple players with byes for instance, you have to write down the "BYE" and/or "FOR" code multiple times. See an example of using "BYE" and "FOR" in "DubovSystem/tests/parsing_test.trf."
 
@@ -187,7 +196,7 @@ int main() {
 }
 ```
 
-A word on **incrementUpfloat** and **setUpfloatPrevStatus**. If you are not familiar with the term "upfloater", this simply means someone who played another person who has a higher score then them. For instance, if Bob (who has 1.0 points) plays Joe (who has 2.0 points), Bob is the upfloater. Float history is extremely important here. For each round the player upfloats, you must signal it to the framework using **incrementUpfloat**. If the player upfloated just the round before the round you are attempting to pair, you must mark **setUpfloatPrevStatus** to true. Otherwise, mark it as false.
+A word on **incrementUpfloat** and **setUpfloatPrevStatus**. If you are not familiar with the term "upfloater," this simply means someone who played another person who has a higher score than them. For instance, if Bob (who has 1.0 points) plays Joe (who has 2.0 points), Bob is the upfloater. Float history is extremely important here. For each round the player upfloats, you must signal it to the framework using **incrementUpfloat**. If the player upfloated just the round before the round you are attempting to pair, you must mark **setUpfloatPrevStatus** to true. Otherwise, mark it as false.
 
 If a player is requesting a bye, or you do not wish to pair a player, simply do not include that player in the pairing selection.
 
@@ -213,11 +222,11 @@ int main() {
 
 It is extremely important to note that as the FIDE rules say, you are required to **make sure all players are rated**. It actually says it in rule 1.1.1 (see rule book). If the pairing engine detects that a player is unrated, it will put a warning in the console and then generate pairings normally.
 
-It is also noted in the FIDE rule book that the number of rounds the tournament has **must** be set. So remember that when using this framework through a terminal, make sure that the **TNR** code is in the TRF file.
+It is also noted in the FIDE rule book that the number of rounds the tournament has **must** be set. So remember that when using this framework through a terminal, make sure that the **TNR** code (or XXR) is in the TRF file.
 
 Once again, this pairing engine has not yet been approved by FIDE. But I will send it to them for approval. I will update this README file once they have approved it.
 
-For the first round, this pairing engine will automatically assign the color white to the top player. There is no way you can override this. If you want to assign black to the top player, after the pairings are generated, you will have to fix this yourself.
+For the first round, this pairing engine will automatically assign the color white to the top player. You can use the "XXC" TRF(x) code to override this (e.g. "XXC white1" OR "XXC black1"). The _Tournament_ class also has the function _setRound1Color_ which accepts a boolean value. If the value is set to true, white will be given to the top player in round 1.
 
 Here is a list of error codes the framework can give you:
 

@@ -34,6 +34,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		4C0793A62EB2E81F00BE9584 /* CMakeLists.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = CMakeLists.txt; sourceTree = "<group>"; };
 		4C0A7A0A2D3DAADE002D5E71 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		4C0A7A0B2D3DAD47002D5E71 /* random1.trf */ = {isa = PBXFileReference; lastKnownFileType = text; path = random1.trf; sourceTree = "<group>"; };
 		4C16CFF22D651104004B7356 /* parsing_test.trf */ = {isa = PBXFileReference; lastKnownFileType = text; path = parsing_test.trf; sourceTree = "<group>"; };
@@ -92,6 +93,7 @@
 				4C2ED6062D3C33FC00D27664 /* build.sh */,
 				4CC02D602C852B2B003F51ED /* CHANGELOG.md */,
 				4C4996C12C014F86003317FC /* LICENSE */,
+				4C0793A62EB2E81F00BE9584 /* CMakeLists.txt */,
 				4C4B9A0C2BF06DEB00CD068A /* DubovSystem */,
 				4C4B9A0B2BF06DEB00CD068A /* Products */,
 			);

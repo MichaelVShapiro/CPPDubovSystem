@@ -1,5 +1,17 @@
 #  CPPDubovSystem Changelog
 
+## 2.1
+### October 29, 2025
+
+- Fixed a few compilation issues on Linux (issue #1, Add CMake, fix Linux build)
+- Added CMake as another way to build the project (issue #1, Add CMake, fix Linux build)
+- Added support for TRF(x) "XXR" code (issue #2, Compatibility with TRF(x))
+- Added support for TRF(x) "XXC" code
+- Added support for TRF(x) "XXZ" code
+- Added support for TRF(x) "XXP" code
+
+Thank you to [@pierotofy](https://github.com/pierotofy) for making compilation fixes for the Linux build (issue #1) along with including a CMakeLists file, and [@Moritz72](https://github.com/Moritz72) for the suggestion of adding XXR code in the TRF(x) file (issue #2)!
+
 ## 2.0
 ### February 22, 2025
 

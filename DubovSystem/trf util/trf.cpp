@@ -25,6 +25,8 @@
 
 // https://www.fide.com/FIDE/handbook/C04Annex2_TRF16.pdf
 
+//TODO: THIS MIGHT BE THE NEW VERSION FOR TRF: https://tec.fide.com/wp-content/uploads/2025/01/TRF25-FinalDraft.pdf
+
 void TRFUtil::clearSpaces(std::string *str_clear) {
     std::string str_rep = "";
     for(int i = 0; i < str_clear->size(); i++) {
@@ -152,6 +154,42 @@ void TRFUtil::TRFData::parseRestriction(const std::string &line) {
     this->restricted_pairings.push_back(std::make_pair(std::stoi(p1), std::stoi(p2)));
 }
 
+void TRFUtil::TRFData::parseXXZ(const std::string &line) {
+    // it is assumed data passed into line is everything after 'XXZ '
+    // data appears to be stored as a list of numbers with a space separating each id
+    
+    // loop over the line and add each number to the list of byes
+    std::string full_num;
+    for(auto i : line) {
+        // if i is a space, we are reaching a new item
+        if(i == ' ') {
+            this->byes.insert(std::stoi(full_num));
+            full_num = "";
+            continue;
+        }
+        full_num.push_back(i);
+    }
+    
+    // there is no space at the end of this line
+    // so just include this number into the set as well
+    // as long as the string is not empty
+    if(!full_num.empty()) this->byes.insert(std::stoi(full_num));
+}
+
+void TRFUtil::TRFData::parseXXC(const std::string &line) {
+    // it is assumed data passed into line is everything after 'XXC '
+    // this line can have one of the following:
+    // - XXC white1
+    // - XXC black1
+    // - XXC rank
+    // where white1 and black1 represent the start color for round 1 respectively
+    // rank is basically where the pairing engine picks the color (in this case, the default is white)
+    if(line != "white1" && line != "black1" && line != "rank")
+        throw "Expected value 'white1' OR 'black1' OR 'rank' for XXC code";
+    
+    if(line == "black1") this->round1_white = false;
+}
+
 void TRFUtil::TRFData::parseLine(const std::string &line) {
     // make sure we have at least 3 chars
     if(((int) line.size()) == 0) {
@@ -178,11 +216,14 @@ void TRFUtil::TRFData::parseLine(const std::string &line) {
     keys["122"] = "time_control";
     keys["132"] = "dates";
     keys["001"] = "players";
-    keys["XXR"] = "extra";
+    keys["XXR"] = "rounds";
     keys["TNR"] = "rounds";
     keys["ACC"] = "baku_acceleration";
     keys["BYE"] = "bye";
     keys["FOR"] = "pairing_restriction";
+    keys["XXZ"] = "bye_list";
+    keys["XXC"] = "round1_color";
+    keys["XXP"] = "pairing_restriction";
     
     // make sure line id is valid
     if(keys.find(line_id) == keys.end()) {
@@ -194,7 +235,7 @@ void TRFUtil::TRFData::parseLine(const std::string &line) {
 //        this->parsePlayer(line.substr(3));
         this->parsePlayer(line);
         return;
-    } else if(line_id == "TNR") {
+    } else if(line_id == "TNR" || line_id == "XXR") {
         this->rounds_tnr = std::stoi(line.substr(3));
     } else if(line_id == "ACC") {
         // check value
@@ -210,9 +251,13 @@ void TRFUtil::TRFData::parseLine(const std::string &line) {
         std::string s = line.substr(4);
         int si = std::stoi(s);
         this->byes.insert(si);
-    } else if(line_id == "FOR") {
+    } else if(line_id == "FOR" || line_id == "XXP") {
         std::string s = line.substr(4);
         this->parseRestriction(s);
+    } else if(line_id == "XXZ") {
+        this->parseXXZ(line.substr(4));
+    } else if(line_id == "XXC") {
+        this->parseXXC(line.substr(4));
     }
     
     // record into table

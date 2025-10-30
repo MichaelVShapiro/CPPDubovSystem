@@ -2073,6 +2073,10 @@ void CPPDubovSystem::Tournament::addPlayer(Player &&p) {
     this->players.push_back(p);
 }
 
+void CPPDubovSystem::Tournament::setRound1Color(bool make_white) {
+    this->round1_top_board_white = make_white;
+}
+
 CPPDubovSystem::Match::Match(const Player &white, const Player &black, bool is_bye) {
     this->is_bye = is_bye;
     this->white = white;
@@ -2353,7 +2357,7 @@ std::vector<CPPDubovSystem::Match> CPPDubovSystem::Tournament::makeRound1() {
     std::vector<Match> games;
     int middle = floor(this->player_count / 2);
     int opp = floor(this->player_count / 2);
-    Color curr = Color::WHITE;
+    Color curr = this->round1_top_board_white ? Color::WHITE : Color::BLACK;
     Utils::sortPlayersRating(&this->players, 0, this->player_count - 1);
     // round 1 pairings simply follow the rule of top half vs bottom half
     // and colors alternate for the upper half as we go down
@@ -2772,6 +2776,9 @@ std::vector<CPPDubovSystem::Match> CPPDubovSystem::Tournament::generatePairings(
 
 CPPDubovSystem::Tournament CPPDubovSystem::Tournament::makeTournament(const TRFUtil::TRFData &from_data, int *next_round, int stop_read) {
     Tournament t_main(from_data.getRoundsTnr());
+    
+    // set round 1 if needed
+    t_main.setRound1Color(from_data.shouldRound1TopBeWhite());
     
     // add players
     std::vector<std::map<std::string, std::string>> players = from_data.getPlayerSection();

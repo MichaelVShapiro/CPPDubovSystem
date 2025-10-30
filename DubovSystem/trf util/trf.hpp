@@ -70,6 +70,10 @@ private:
      */
     bool acceleration_on = false;
     /**
+     * If round 1 top board should have the higher ranked player given white. Defaults to true
+     */
+    bool round1_white = true;
+    /**
      * Parses player data
      */
     void parsePlayer(const std::string &line);
@@ -77,6 +81,14 @@ private:
      * Parses the line for pairing restriction
      */
     void parseRestriction(const std::string &line);
+    /**
+     * Parses the line for XXZ
+     */
+    void parseXXZ(const std::string &line);
+    /**
+     * Parses the line for XXC
+     */
+    void parseXXC(const std::string &line);
 public:
     /**
      * Default constructor
@@ -102,6 +114,10 @@ public:
      * Gets the rounds from the captured TNR code
      */
     int getRoundsTnr() const {return rounds_tnr;}
+    /**
+     * Determines if the top player in round 1 gets white
+     */
+    bool shouldRound1TopBeWhite() const {return round1_white;}
     /**
      * Determines if the tnr code exists in the file. When it is not present, false is returned. This should of course only be executed after the file has actually been read
      */
