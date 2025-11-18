@@ -31,7 +31,7 @@
  */
 void helpDisplay() {
     std::cout << "--------FIDE DUBOV SYSTEM PAIRING ENGINE--------" << std::endl;
-    std::cout << "--------------------Version 2.0-----------------" << std::endl;
+    std::cout << "--------------------Version 2.1.1---------------" << std::endl;
     std::cout << "---------------Author: Michael Shapiro----------" << std::endl;
     std::cout << "-------------------Help Section-----------------" << std::endl;
     std::cout << "\n\n\n\n";
@@ -160,7 +160,7 @@ int main(int argc, const char * argv[]) {
             std::cerr << "Missing TRF file path" << std::endl;
             return -1;
         } else if(passed == "--version") {
-            std::cout << "CPPDubovSystem -- Version 2.0" << std::endl;
+            std::cout << "CPPDubovSystem -- Version 2.1.1" << std::endl;
             return 0;
         }
         std::cerr << "Unexpected command passed in. Execute --help command or --sample for sample usage" << std::endl;

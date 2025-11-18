@@ -57,6 +57,10 @@
             isEnabled = "NO">
          </CommandLineArgument>
          <CommandLineArgument
+            argument = "--pairings &quot;/Users/michael/Desktop/CPP Apps/DubovSystem/DubovSystem/tests/issue4.trf&quot;"
+            isEnabled = "YES">
+         </CommandLineArgument>
+         <CommandLineArgument
             argument = "--pairings &quot;/Users/michael/Desktop/CPP Apps/DubovSystem/DubovSystem/tests/parsing_test.trf&quot;"
             isEnabled = "NO">
          </CommandLineArgument>
@@ -66,7 +70,7 @@
          </CommandLineArgument>
          <CommandLineArgument
             argument = "--fpc &quot;/Users/michael/Desktop/CPP Apps/DubovSystem/DubovSystem/tests/baku_test.trf&quot; --fpc_rounds 3"
-            isEnabled = "YES">
+            isEnabled = "NO">
          </CommandLineArgument>
          <CommandLineArgument
             argument = "--fpc &quot;/Users/michael/Downloads/dubov1.trf&quot; --fpc_rounds 7"

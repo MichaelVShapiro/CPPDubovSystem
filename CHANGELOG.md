@@ -1,5 +1,10 @@
 #  CPPDubovSystem Changelog
 
+## 2.1.1
+### November 18, 2025
+
+- Fixed the order of how pairings were generated (issue #4). Updated to follow FIDE guidelines on how pairings should be sorted as given in article 3.6 here: [https://handbook.fide.com/chapter/GeneralHandlingRulesForSwissTournaments202602](https://handbook.fide.com/chapter/GeneralHandlingRulesForSwissTournaments202602)
+
 ## 2.1
 ### October 29, 2025
 

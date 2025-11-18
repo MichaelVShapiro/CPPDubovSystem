@@ -67,6 +67,7 @@
 		4C7C6DDF2C60865D00D22895 /* assertm.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = assertm.h; sourceTree = "<group>"; };
 		4C825CFE2BFE9319005AB907 /* rtg.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = rtg.cpp; sourceTree = "<group>"; };
 		4C825CFF2BFE9319005AB907 /* rtg.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = rtg.hpp; sourceTree = "<group>"; };
+		4C87E4B92ECCF81C0081F095 /* issue4.trf */ = {isa = PBXFileReference; lastKnownFileType = text; path = issue4.trf; sourceTree = "<group>"; };
 		4CC02D602C852B2B003F51ED /* CHANGELOG.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = CHANGELOG.md; sourceTree = SOURCE_ROOT; };
 		4CC67F5B2C503A8B0020DBC6 /* csv.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = csv.hpp; sourceTree = "<group>"; };
 		4CE3756D2D46F65E0067460D /* random2.trf */ = {isa = PBXFileReference; lastKnownFileType = text; path = random2.trf; sourceTree = "<group>"; };
@@ -133,6 +134,7 @@
 		4C56D7F62BF567F1001CBD74 /* tests */ = {
 			isa = PBXGroup;
 			children = (
+				4C87E4B92ECCF81C0081F095 /* issue4.trf */,
 				4C0A7A0A2D3DAADE002D5E71 /* README.md */,
 				4C0A7A0B2D3DAD47002D5E71 /* random1.trf */,
 				4CE3756D2D46F65E0067460D /* random2.trf */,

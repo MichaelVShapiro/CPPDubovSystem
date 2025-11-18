@@ -2708,6 +2708,32 @@ std::vector<CPPDubovSystem::Match> CPPDubovSystem::Tournament::makeSubsequent(in
         games = this->makePairingForGroup(curr, pairing_round);
     }
     
+    // if we don't have any errors, then sort as according to 3.6
+    if(!this->pairing_error) {
+        // sorting for pairings can be found here: https://handbook.fide.com/chapter/GeneralHandlingRulesForSwissTournaments202602
+        auto sort_pairings = [](const Match &a, const Match &b) {
+            // 3.6.1 sort by those who have more points
+            double pt1 = std::max(a.white.getPoints(), a.black.getPoints());
+            double pt2 = std::max(b.white.getPoints(), b.black.getPoints());
+            
+            if(pt1 != pt2) return pt1 > pt2;
+            
+            // 3.6.2 sort by those who have a higher sum
+            double s1 = a.white.getPoints() + a.black.getPoints();
+            double s2 = b.white.getPoints() + b.black.getPoints();
+            
+            if(s1 != s2) return s1 > s2;
+            
+            // 3.6.3 sort by those who have a higher pairing num
+            int h1 = std::min(a.white.getID(), a.black.getID());
+            int h2 = std::min(b.white.getID(), b.black.getID());
+            
+            return h1 < h2;
+        };
+        
+        std::sort(games.begin(), games.end(), sort_pairings);
+    }
+    
     return games;
 }
 
