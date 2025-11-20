@@ -57,8 +57,12 @@
             isEnabled = "NO">
          </CommandLineArgument>
          <CommandLineArgument
-            argument = "--pairings &quot;/Users/michael/Desktop/CPP Apps/DubovSystem/DubovSystem/tests/issue4.trf&quot;"
+            argument = "--pairings &quot;/Users/michael/Desktop/CPP Apps/DubovSystem/DubovSystem/tests/issue5.trf&quot;"
             isEnabled = "YES">
+         </CommandLineArgument>
+         <CommandLineArgument
+            argument = "--pairings &quot;/Users/michael/Desktop/CPP Apps/DubovSystem/DubovSystem/tests/issue4.trf&quot;"
+            isEnabled = "NO">
          </CommandLineArgument>
          <CommandLineArgument
             argument = "--pairings &quot;/Users/michael/Desktop/CPP Apps/DubovSystem/DubovSystem/tests/parsing_test.trf&quot;"

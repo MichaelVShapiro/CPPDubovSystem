@@ -1,5 +1,10 @@
 #  CPPDubovSystem Changelog
 
+## 2.1.2
+### November 20, 2025
+
+- Fixed a small bug where a LinkedListNode was not getting a deep copy properly (issue #5).
+
 ## 2.1.1
 ### November 18, 2025
 

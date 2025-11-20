@@ -23,7 +23,7 @@
 #define Tournament_hpp
 
 #ifndef CPPDUBOVSYSTEM_VERSION
-#define CPPDUBOVSYSTEM_VERSION 2.1.1
+#define CPPDUBOVSYSTEM_VERSION 2.1.2
 #endif
 
 #include <stdio.h>

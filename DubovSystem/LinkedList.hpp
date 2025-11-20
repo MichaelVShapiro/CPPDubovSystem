@@ -45,6 +45,10 @@ struct LinkedListNode {
      * Constructor for LinkedListNode
      */
     LinkedListNode(std::vector<Player> data);
+    /**
+     * Deep copy constructor
+     */
+    LinkedListNode(const LinkedListNode &other);
 };
 
 /**

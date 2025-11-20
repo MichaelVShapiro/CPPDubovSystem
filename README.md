@@ -14,7 +14,7 @@ A simple pairing engine that generates pairings via the FIDE Swiss Dubov system.
 
 ## About CPPDubovSystem
 
-CPPDubovSystem (**current version 2.1.1**) is a framework for generating pairings using the FIDE Swiss Dubov algorithm. It is coded entirely in C++.
+CPPDubovSystem (**current version 2.1.2**) is a framework for generating pairings using the FIDE Swiss Dubov algorithm. It is coded entirely in C++.
 
 This framework follows all the rules written [here](https://handbook.fide.com/chapter/C040401202602). I reccomend for you to [see also](http://www.rrweb.org/javafo/C04.pdf). Please note that this has **NOT YET BEEN APPROVED** by FIDE, however it will be sent to FIDE at one point for approval. Follow this repository for updates!
 

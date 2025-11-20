@@ -23,6 +23,14 @@
 
 CPPDubovSystem::LinkedListNode::LinkedListNode(std::vector<Player> data): data(data), next(nullptr) {}
 
+CPPDubovSystem::LinkedListNode::LinkedListNode(const LinkedListNode &other): data(other.data) {
+    // if next is null, we are basically done
+    if(other.next == nullptr)
+        this->next = nullptr;
+    else
+        this->next = new LinkedListNode(*(other.next)); // recursively call the constructor
+}
+
 CPPDubovSystem::LinkedList::LinkedList(): head(nullptr) {
     
 }
