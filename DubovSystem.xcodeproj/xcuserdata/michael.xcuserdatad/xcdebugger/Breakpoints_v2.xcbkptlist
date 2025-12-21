@@ -78,24 +78,8 @@
             filePath = "DubovSystem/Tournament.cpp"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "2551"
-            endingLineNumber = "2551"
-            landmarkName = "CPPDubovSystem::Tournament::makePairingForGroup(g, pairing_round)"
-            landmarkType = "7">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            uuid = "A9FF03F5-4EE4-4BAB-A52D-C4A2365C8BAD"
-            shouldBeEnabled = "No"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "DubovSystem/Tournament.cpp"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "2529"
-            endingLineNumber = "2529"
+            startingLineNumber = "3092"
+            endingLineNumber = "3092"
             landmarkName = "CPPDubovSystem::Tournament::makePairingForGroup(g, pairing_round)"
             landmarkType = "7">
          </BreakpointContent>
@@ -111,8 +95,8 @@
             filePath = "DubovSystem/Tournament.cpp"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "1959"
-            endingLineNumber = "1959"
+            startingLineNumber = "2419"
+            endingLineNumber = "2419"
             landmarkName = "CPPDubovSystem::Tournament::optimizeColors(games)"
             landmarkType = "7">
          </BreakpointContent>
@@ -127,8 +111,8 @@
             filePath = "DubovSystem/Tournament.cpp"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "2485"
-            endingLineNumber = "2485"
+            startingLineNumber = "2972"
+            endingLineNumber = "2972"
             landmarkName = "CPPDubovSystem::Tournament::makePairingForGroup(g, pairing_round)"
             landmarkType = "7">
          </BreakpointContent>
@@ -159,8 +143,8 @@
             filePath = "DubovSystem/Tournament.cpp"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "2508"
-            endingLineNumber = "2508"
+            startingLineNumber = "2996"
+            endingLineNumber = "2996"
             landmarkName = "CPPDubovSystem::Tournament::makePairingForGroup(g, pairing_round)"
             landmarkType = "7">
          </BreakpointContent>

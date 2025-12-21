@@ -205,6 +205,10 @@ public:
      */
     bool canUpfloat(int cr) const;
     /**
+     * Gets the number of times the player has upfloated while being a max upfloater
+     */
+    int getNumUpfloatedIfMaxUpfloater(int total_rounds) const;
+    /**
      * A getter for opponents played
      */
     std::vector<int> getOppPlayed() const {return opp_played_return;}
@@ -264,6 +268,11 @@ public:
      * Just for overloading the > operator
      */
     bool operator >(const Player &other);
+    
+    /**
+     * Gets the maximum number of times a player is allowed to upfloat
+     */
+    static int getMaxUpfloatTimes(int total_rounds);
 };
 }
 

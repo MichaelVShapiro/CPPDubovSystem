@@ -14,7 +14,7 @@ A simple pairing engine that generates pairings via the FIDE Swiss Dubov system.
 
 ## About CPPDubovSystem
 
-CPPDubovSystem (**current version 2.1.2**) is a framework for generating pairings using the FIDE Swiss Dubov algorithm. It is coded entirely in C++.
+CPPDubovSystem (**current version 2.2**) is a framework for generating pairings using the FIDE Swiss Dubov algorithm. It is coded entirely in C++.
 
 This framework follows all the rules written [here](https://handbook.fide.com/chapter/C040401202602). I reccomend for you to [see also](http://www.rrweb.org/javafo/C04.pdf). Please note that this has **NOT YET BEEN APPROVED** by FIDE, however it will be sent to FIDE at one point for approval. Follow this repository for updates!
 
@@ -72,6 +72,18 @@ user@user:~$ ./CPPDubovSystem --pairings "path/to/tournament_data.trf" --output 
 The data outputted by the framework is in CSV format. There are only two columns in the file, "White" and "Black." For each column, the players ID (or starting rank passed in) is outputted respectively. Any players who recieved a PAB (pairing allocated BYE) will have their opponent ID marked as -1.
 
 Note that any players which you signaled not to pair, will not be outputted in the file. The pairing engine is designed to only output players in the CSV file which are active for the round.
+
+### Explaining Pairings
+
+As of CPPDubovSystem 2.2, the pairing engine can explain to you how it got the pairings! To do so, execute the following:
+
+```bash
+./CPPDubovSystem --pairings "path/to/tournament_data.trf" --output "path/to/output.csv" --explain "path/to/output_explain.txt"
+```
+
+The above command is pretty simple. Pairings will be generated and outputted to the specified file, but also we include ```--explain``` which signals the pairing engine to explain its logic. You don't have to include the ```"path/to/output_explain.txt"``` part after ```--explain``` if you don't want do. If you do this, the explanation will just be put into the terminal. Do know that generally, especially for larger tournaments, the explanations could be really big! So instead of outputting the explanations directly into the terminal, output it to a file instead! The explanation is written in Markdown, so you can open it with your favorite Markdown editor/viewer.
+
+**NOTE**: This is an experimental feature and is still under testing. The ```--explain``` only works when you are creating new pairings (so this won't work with ```--fpc``` or ```--rtg```) and outputting them to a file (hence ```--output``` must be present). Also do note that it cannot explain 100% of its logic. Some parts of the program use a lot of optimization (e.g. Minimum Weight Matching) which is something the pairing engine cannot explain. However, a majority of its logic, including which rules and operations its applying, can be explained!
 
 ### Random Tournament Generator
 

@@ -1,5 +1,11 @@
 #  CPPDubovSystem Changelog
 
+## 2.2
+### December 21, 2025
+
+- Added a feature where the pairing engine can explain its logic. See README for documentation on how use the ```--explain``` command.
+- Fixed a minor bug where an upfloater was not being chosen correctly (issue #7 and issue #8)
+
 ## 2.1.2
 ### November 20, 2025
 

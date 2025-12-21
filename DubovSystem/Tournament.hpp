@@ -23,7 +23,7 @@
 #define Tournament_hpp
 
 #ifndef CPPDUBOVSYSTEM_VERSION
-#define CPPDUBOVSYSTEM_VERSION 2.1.2
+#define CPPDUBOVSYSTEM_VERSION 2.2
 #endif
 
 #include <stdio.h>
@@ -36,6 +36,7 @@
 #include "trf util/rtg.hpp"
 #include "baku.hpp"
 #include "graph util/Matching.h"
+#include "explain.hpp"
 
 
 /**
@@ -105,6 +106,7 @@ void playersRatingRTGMerge(std::vector<Player> *players, int const left, int con
 /**
  * For sorting players by rating
  */
+[[deprecated("Usage of CPPDubovSystem::Utils::sortPlayersRating has been deprecated. Use std::sort instead for optimal performance")]]
 void sortPlayersRating(std::vector<Player> *players, int const begin, int const end);
 /**
  * For sorting player in rtg
@@ -238,6 +240,14 @@ private:
      * Whether to make round 1 top board white
      */
     bool round1_top_board_white = true;
+    /**
+     * If the explanation logger should be used
+     */
+    bool enable_logging = false;
+    /**
+     * For logging steps
+     */
+    ExplainLogger logger;
     
     /**
      * Divides a given group into to separate subgroups, both being players who are due white and black
@@ -303,7 +313,12 @@ private:
     /**
      * Finds the next set of upfloaters that can satisfy the pairing. This returns the ids of all the players who should be the upfloaters
      */
+    [[deprecated("Usage of findMultiUpfloaters has been deprecated. Use findOptimalUpfloaters instead")]]
     std::set<int> findMultiUpfloaters(std::vector<Player> &white_seekers, std::vector<Player> &black_seekers, LinkedListNode &next_group, bool &error);
+    /**
+     * Finds the upfloaters needed to satisfy pairing in the score group
+     */
+    std::set<int> findOptimalUpfloaters(std::vector<Player> &white_seekers, std::vector<Player> &black_seekers, LinkedListNode &next_group, bool &error);
     /**
      * Recreates the new groups by removing all upfloaters from the lower groups
      */
@@ -391,6 +406,10 @@ public:
      */
     void setRound1Color(bool make_white);
     /**
+     * If explanation logging should be enabled
+     */
+    void enableExplanationLogger(bool enable) {this->enable_logging = enable;}
+    /**
      * Gets all registered players in the tournament
      */
     std::vector<Player> getPlayers() const {return players;}
@@ -402,6 +421,10 @@ public:
      * A simple getter for player count
      */
     int getPlayerCount() const {return player_count;}
+    /**
+     * Gets the explanation logger
+     */
+    ExplainLogger getExplainLogger() const {return this->logger;}
     /**
      * Generates pairings for a given round
      */
@@ -418,6 +441,26 @@ public:
      * Sets the raw matches
      */
     void setRawMatch(const std::vector<Utils::TRFMatch> &s) {extractedMatch = s;}
+    /**
+     * Logs an explanation if applicable
+     */
+    void logExplanation(const std::string &explanation);
+    /**
+     * Logs a list of players if applicable
+     */
+    void logPlayers(const std::vector<Player> &players, const std::string &extra_explanation);
+    /**
+     * Logs a list of games if applicable
+     */
+    void logMatches(const std::vector<Match> &games, const std::string &heading);
+    /**
+     * Logs a list of games (to evaluate) if applicable
+     */
+    void logMatches(const std::vector<MatchEval> &games, const std::string &heading);
+    /**
+     * Logs an entire score group in a table like format
+     */
+    void logScoreGroup(std::vector<Player> &white_seekers, std::vector<Player> &black_seekers, const std::string &heading);
     /**
      * Creates a tournament from TRF data
      */

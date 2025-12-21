@@ -8,7 +8,7 @@
 # //
 
 CPPDUBOVSYSTEM_BUILDSH_VERSION="1.0"
-TARGET_CPPDUBOVSYSTEM_VERSION_INSTALL="2.1.2"
+TARGET_CPPDUBOVSYSTEM_VERSION_INSTALL="2.2"
 
 echo "CPPDubovSystem build.sh -- version $CPPDUBOVSYSTEM_BUILDSH_VERSION"
 echo "CPPDubovSystem install version: $TARGET_CPPDUBOVSYSTEM_VERSION_INSTALL"
@@ -20,7 +20,7 @@ cd DubovSystem
 # lets validate that all the files are in the correct locations within the folder
 # this is to really just make sure that all the required files were downloaded with the repository
 echo "Checking files..."
-declare -a files_to_check=("main.cpp" "graph util/Graph.cpp" "graph util/BinaryHeap.cpp" "graph util/Matching.cpp" "csv util/csv.cpp" "fpc.cpp" "trf util/trf.cpp" "trf util/rtg.cpp" "Player.cpp" "Tournament.cpp" "baku.cpp" "LinkedList.cpp")
+declare -a files_to_check=("main.cpp" "graph util/Graph.cpp" "graph util/BinaryHeap.cpp" "graph util/Matching.cpp" "csv util/csv.cpp" "fpc.cpp" "trf util/trf.cpp" "trf util/rtg.cpp" "Player.cpp" "Tournament.cpp" "baku.cpp" "LinkedList.cpp", "explain.cpp")
 
 for i in "${files_to_check[@]}"
 do
@@ -51,11 +51,11 @@ cd ..
 if [ "$(uname)" == "Darwin" ]; then
     # then we use clang++ (the reccomended MacOS compiler) for compiling
     echo "Using clang++ command to install..."
-    clang++ -std=c++20 -o CPPDubovSystem DubovSystem/main.cpp "DubovSystem/graph util/Graph.cpp" "DubovSystem/graph util/BinaryHeap.cpp" "DubovSystem/graph util/Matching.cpp" "DubovSystem/csv util/csv.cpp" "DubovSystem/fpc.cpp" "DubovSystem/trf util/trf.cpp" "DubovSystem/trf util/rtg.cpp" DubovSystem/Player.cpp DubovSystem/Tournament.cpp DubovSystem/baku.cpp DubovSystem/LinkedList.cpp
+    clang++ -std=c++20 -o CPPDubovSystem DubovSystem/main.cpp "DubovSystem/graph util/Graph.cpp" "DubovSystem/graph util/BinaryHeap.cpp" "DubovSystem/graph util/Matching.cpp" "DubovSystem/csv util/csv.cpp" "DubovSystem/fpc.cpp" "DubovSystem/trf util/trf.cpp" "DubovSystem/trf util/rtg.cpp" DubovSystem/Player.cpp DubovSystem/Tournament.cpp DubovSystem/baku.cpp DubovSystem/LinkedList.cpp DubovSystem/explain.cpp
 else
     # in that case we use g++ to compile
     echo "Using g++ command to install..."
-    g++ -std=c++20 -o CPPDubovSystem DubovSystem/main.cpp "DubovSystem/graph util/Graph.cpp" "DubovSystem/graph util/BinaryHeap.cpp" "DubovSystem/graph util/Matching.cpp" "DubovSystem/csv util/csv.cpp" "DubovSystem/fpc.cpp" "DubovSystem/trf util/trf.cpp" "DubovSystem/trf util/rtg.cpp" DubovSystem/Player.cpp DubovSystem/Tournament.cpp DubovSystem/baku.cpp DubovSystem/LinkedList.cpp
+    g++ -std=c++20 -o CPPDubovSystem DubovSystem/main.cpp "DubovSystem/graph util/Graph.cpp" "DubovSystem/graph util/BinaryHeap.cpp" "DubovSystem/graph util/Matching.cpp" "DubovSystem/csv util/csv.cpp" "DubovSystem/fpc.cpp" "DubovSystem/trf util/trf.cpp" "DubovSystem/trf util/rtg.cpp" DubovSystem/Player.cpp DubovSystem/Tournament.cpp DubovSystem/baku.cpp DubovSystem/LinkedList.cpp DubovSystem/explain.cpp
 fi
 
 # lets make sure installation was a success

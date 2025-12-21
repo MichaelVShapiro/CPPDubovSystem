@@ -217,6 +217,17 @@ bool CPPDubovSystem::Player::canUpfloat(int cr) const {
     return true;
 }
 
+int CPPDubovSystem::Player::getNumUpfloatedIfMaxUpfloater(int total_rounds) const {
+    // is this player a max upfloater?
+    if(this->canUpfloat(total_rounds)) return 0; // can still upfloat
+    
+    // determine the number of times the player can upfloat
+    int max_upfloat = Player::getMaxUpfloatTimes(total_rounds);
+    
+    // this is easy substraction
+    return this->numUpfloated - max_upfloat;
+}
+
 void CPPDubovSystem::Player::setUpfloatPrevStatus(bool s) {
     this->upfloated_prev = s;
 }
@@ -324,4 +335,13 @@ bool CPPDubovSystem::Player::operator>(const Player &other) {
     if(this->getID() < other.getID()) return true;
     
     return false;
+}
+
+int CPPDubovSystem::Player::getMaxUpfloatTimes(int total_rounds) {
+    // 1.7 -> max upfloat equals to 2 + [cr / 5]
+    double crd = (double) total_rounds;
+    double f = floor(crd / 5.0);
+    int fi = (int) f;
+    int max_allowed = 2 + fi;
+    return max_allowed;
 }

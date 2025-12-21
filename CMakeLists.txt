@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.16)
 
 # Project name and version
-project(CPPDubovSystem VERSION 1.0)
+project(CPPDubovSystem VERSION 2.2)
 
 # Set C++ standard
 set(CMAKE_CXX_STANDARD 20)
@@ -24,6 +24,7 @@ set(SOURCES
     DubovSystem/Tournament.cpp
     DubovSystem/baku.cpp
     DubovSystem/LinkedList.cpp
+    DubovSystem/explain.cpp
 )
 
 # Create the executable

@@ -1,0 +1,599 @@
+# Explanation of Pairings
+
+## Step 1
+
+CPPDubovSystem (https://github.com/MichaelVShapiro/CPPDubovSystem) -- Explanation of pairings.
+
+## Step 2
+
+Sort players into respective score groups (sorted by points then by pairing number)
+
+## Step 3
+
+Computing due colors, due color strengths, and ARO for all players.
+
+## Step 4
+
+Odd number of players in the tournament! Picking the player who should get the BYE by following rule 3.1...
+
+## Step 5
+
+Trying to give player BYE: Player2 (ID = 2)
+
+## Step 6
+
+Attempting to pair tournament...
+
+## Step 7
+
+Doing pairings for score group with points: 3.500000
+
+## Step 8
+
+Split players into groups. Those who have the due color White go into the "White Seekers" Group while those who are due Black go into the "Black Seekers" Group.
+
+## Step 9
+
+Black Seekers (sorted by pairing number)
+1. Player5 (ID = 5) -- Points = 3.500000 -- ARO = 1400.000000 -- Rating = 1209 -- Due Color: Black -- Due Color Strength: Alternation
+
+## Step 10
+
+### Score Group View
+
+|White Seekers|Black Seekers   |
+|             |Player5 (ID = 5)|
+
+## Step 11
+
+Group has an odd number of players! Attempting to pick an upfloater...
+
+## Step 12
+
+Possible upfloaters (properly sorted by the following: score differences amongst players minimized, players closer to the top of the list are not max upfloaters or upfloated previously, and have the proper due color that would go to the group of seekers with less players).
+1. Player3 (ID = 3) -- Points = 2.500000 -- ARO = 1298.000000 -- Rating = 1419 -- Due Color: White -- Due Color Strength: Alternation
+2. Player4 (ID = 4) -- Points = 2.000000 -- ARO = 1512.000000 -- Rating = 1238 -- Due Color: White -- Due Color Strength: Mild
+3. Player7 (ID = 7) -- Points = 2.000000 -- ARO = 1638.000000 -- Rating = 1038 -- Due Color: White -- Due Color Strength: Absolute
+4. Player1 (ID = 1) -- Points = 2.000000 -- ARO = 1393.000000 -- Rating = 2285 -- Due Color: Black -- Due Color Strength: Mild
+5. Player6 (ID = 6) -- Points = 2.000000 -- ARO = 1520.000000 -- Rating = 1043 -- Due Color: Black -- Due Color Strength: Absolute
+
+## Step 13
+
+Picking the next upfloater on the list of upfloaters to try on the list: player with ID = 3, Name = Player3
+
+## Step 14
+
+Removing upfloater from lower score group...
+
+## Step 15
+
+Upfloater has the due color White. Inserting this player into White Seekers and resorting this group again...
+
+## Step 16
+
+Group after inserting upfloater and sorting by ARO...
+1. Player3 (ID = 3) -- Points = 2.500000 -- ARO = 1298.000000 -- Rating = 1419 -- Due Color: White -- Due Color Strength: Alternation
+
+## Step 17
+
+### Score Group View After Inserting Upfloater
+
+|White Seekers                      |Black Seekers   |
+|Player3 (ARO = 1298.000000, ID = 3)|Player5 (ID = 5)|
+
+## Step 18
+
+White Seekers and Black Seekers groups are of even size. Attempting to pair them as follows: 1st player in White Seekers plays 1st player in Black Seekers, 2nd player in White Seekers plays 2nd player in Black Seekers, etc.
+
+## Step 19
+
+Player3 (ID = 3) (white) vs. Player5 (ID = 5) - Pairing incompatible!
+
+## Step 20
+
+Problem exists in pairing! Attempting to fix it using transpositions (rule 4.4)...
+
+## Step 21
+
+No good transpositions available!
+
+## Step 22
+
+Attempting to move shifters (swap players between White Seekers and Black Seekers until we could get a pairing working) following rule 4.3.
+
+## Step 23
+
+No shifters available to make a legal pairing in this score group!
+
+## Step 24
+
+Pairings could not be completed for score group!
+
+## Step 25
+
+Trying a different upfloater to see if pairings will be satisfied with this different upfloater...
+
+## Step 26
+
+Picking the next upfloater on the list of upfloaters to try on the list: player with ID = 4, Name = Player4
+
+## Step 27
+
+Removing upfloater from lower score group...
+
+## Step 28
+
+Upfloater has the due color White. Inserting this player into White Seekers and resorting this group again...
+
+## Step 29
+
+Group after inserting upfloater and sorting by ARO...
+1. Player4 (ID = 4) -- Points = 2.000000 -- ARO = 1512.000000 -- Rating = 1238 -- Due Color: White -- Due Color Strength: Mild
+
+## Step 30
+
+### Score Group View After Inserting Upfloater
+
+|White Seekers                      |Black Seekers   |
+|Player4 (ARO = 1512.000000, ID = 4)|Player5 (ID = 5)|
+
+## Step 31
+
+White Seekers and Black Seekers groups are of even size. Attempting to pair them as follows: 1st player in White Seekers plays 1st player in Black Seekers, 2nd player in White Seekers plays 2nd player in Black Seekers, etc.
+
+## Step 32
+
+Player4 (ID = 4) (white) vs. Player5 (ID = 5) - Pairing incompatible!
+
+## Step 33
+
+Problem exists in pairing! Attempting to fix it using transpositions (rule 4.4)...
+
+## Step 34
+
+No good transpositions available!
+
+## Step 35
+
+Attempting to move shifters (swap players between White Seekers and Black Seekers until we could get a pairing working) following rule 4.3.
+
+## Step 36
+
+No shifters available to make a legal pairing in this score group!
+
+## Step 37
+
+Pairings could not be completed for score group!
+
+## Step 38
+
+Trying a different upfloater to see if pairings will be satisfied with this different upfloater...
+
+## Step 39
+
+Picking the next upfloater on the list of upfloaters to try on the list: player with ID = 7, Name = Player7
+
+## Step 40
+
+Removing upfloater from lower score group...
+
+## Step 41
+
+Upfloater has the due color White. Inserting this player into White Seekers and resorting this group again...
+
+## Step 42
+
+Group after inserting upfloater and sorting by ARO...
+1. Player7 (ID = 7) -- Points = 2.000000 -- ARO = 1638.000000 -- Rating = 1038 -- Due Color: White -- Due Color Strength: Absolute
+
+## Step 43
+
+### Score Group View After Inserting Upfloater
+
+|White Seekers                      |Black Seekers   |
+|Player7 (ARO = 1638.000000, ID = 7)|Player5 (ID = 5)|
+
+## Step 44
+
+White Seekers and Black Seekers groups are of even size. Attempting to pair them as follows: 1st player in White Seekers plays 1st player in Black Seekers, 2nd player in White Seekers plays 2nd player in Black Seekers, etc.
+
+## Step 45
+
+Player7 (ID = 7) (white) vs. Player5 (ID = 5) - Pairing incompatible!
+
+## Step 46
+
+Problem exists in pairing! Attempting to fix it using transpositions (rule 4.4)...
+
+## Step 47
+
+No good transpositions available!
+
+## Step 48
+
+Attempting to move shifters (swap players between White Seekers and Black Seekers until we could get a pairing working) following rule 4.3.
+
+## Step 49
+
+No shifters available to make a legal pairing in this score group!
+
+## Step 50
+
+Pairings could not be completed for score group!
+
+## Step 51
+
+Trying a different upfloater to see if pairings will be satisfied with this different upfloater...
+
+## Step 52
+
+Picking the next upfloater on the list of upfloaters to try on the list: player with ID = 1, Name = Player1
+
+## Step 53
+
+Removing upfloater from lower score group...
+
+## Step 54
+
+Upflaoter has the due color Black. Inserting this player into Black Seekers and resorting this group again...
+
+## Step 55
+
+Group after inserting upfloater and sorting by pairing number...
+1. Player1 (ID = 1) -- Points = 2.000000 -- ARO = 1393.000000 -- Rating = 2285 -- Due Color: Black -- Due Color Strength: Mild
+2. Player5 (ID = 5) -- Points = 3.500000 -- ARO = 1400.000000 -- Rating = 1209 -- Due Color: Black -- Due Color Strength: Alternation
+
+## Step 56
+
+### Score Group View After Inserting Upfloater
+
+|White Seekers|Black Seekers   |
+|             |Player1 (ID = 1)|
+|             |Player5 (ID = 5)|
+
+## Step 57
+
+White Seekers group (0 players), Black Seekers group (2 players) are not the same size! Attempting to find optimal shifters to move (hopefully moving from the bigger group to the smaller, but if this is impossible, we will move some from both groups until the group can be paired). The players to be chosen to be moved from the larger group to the smaller group will be chosen as described in rule 4.3.3
+
+## Step 58
+
+Generating order of shifters to move...
+
+## Step 59
+
+Larger group has an even number of players. We pick the players to move as follows: take the middle player. The player to the left of this player as the largest priority to move, the middle player has the second priority to move, the player to the left of the left player has the third priority to move, the player to the right of the middle player has the fourth priority to move, etc.
+
+## Step 60
+
+
+1. Player1 (ID = 1)
+2. Player5 (ID = 5)
+
+## Step 61
+
+Smaller group has an even number of players. We pick the players to move as follows: take the middle player. The player to the left of this player as the largest priority to move, the middle player has the second priority to move, the player to the left of the left player has the third priority to move, the player to the right of the middle player has the fourth priority to move, etc.
+
+## Step 62
+
+
+
+## Step 63
+
+Move priorities all set up. First, try moving players from the larger group (given their move priority) to the smaller. If this cannot be accomplished, there is a chance that some players from the smaller group have to also be moved. But avoid this from happening.
+
+## Step 64
+
+Shifter found! Shifting Player1 (ID = 1) from Black Seekers to White Seekers.
+
+## Step 65
+
+Sorting White Seekers and Black Seekers again...
+
+## Step 66
+
+White Seekers after sorting by ARO:
+1. Player1 (ID = 1) -- Points = 2.000000 -- ARO = 1393.000000 -- Rating = 2285 -- Due Color: Black -- Due Color Strength: Mild
+
+## Step 67
+
+Black Seekers after sorting by pairing number:
+1. Player5 (ID = 5) -- Points = 3.500000 -- ARO = 1400.000000 -- Rating = 1209 -- Due Color: Black -- Due Color Strength: Alternation
+
+## Step 68
+
+### New White Seekers and Black Seekers for Pairing
+
+|White Seekers                      |Black Seekers   |
+|Player1 (ARO = 1393.000000, ID = 1)|Player5 (ID = 5)|
+
+## Step 69
+
+Both group sizes are now even. Attempting to pair them...
+
+## Step 70
+
+White Seekers and Black Seekers groups are of even size. Attempting to pair them as follows: 1st player in White Seekers plays 1st player in Black Seekers, 2nd player in White Seekers plays 2nd player in Black Seekers, etc.
+
+## Step 71
+
+Player1(ID = 1) (white) vs. Player5 (ID = 5) - OK
+
+## Step 72
+
+No problems in pairings. Correcting pairings to give due colors to correct players...
+
+## Step 73
+
+Player1 (ID = 1) has greater priority for due color Black over: Player5 (ID = 5. Swapping colors for these two players...
+
+## Step 74
+
+Games after optimizing colors:
+Player5 (ID = 5) (white) - Player1(ID = 1)
+
+## Step 75
+
+Pairing for group completed successfully!
+
+## Step 76
+
+Attempting to pair next group...
+
+## Step 77
+
+Doing pairings for score group with points: 2.500000
+
+## Step 78
+
+Split players into groups. Those who have the due color White go into the "White Seekers" Group while those who are due Black go into the "Black Seekers" Group.
+
+## Step 79
+
+White Seekers (sorted by ARO)
+1. Player3 (ID = 3) -- Points = 2.500000 -- ARO = 1298.000000 -- Rating = 1419 -- Due Color: White -- Due Color Strength: Alternation
+
+## Step 80
+
+### Score Group View
+
+|White Seekers                      |Black Seekers|
+|Player3 (ARO = 1298.000000, ID = 3)|             |
+
+## Step 81
+
+Group has an odd number of players! Attempting to pick an upfloater...
+
+## Step 82
+
+Possible upfloaters (properly sorted by the following: score differences amongst players minimized, players closer to the top of the list are not max upfloaters or upfloated previously, and have the proper due color that would go to the group of seekers with less players).
+1. Player6 (ID = 6) -- Points = 2.000000 -- ARO = 1520.000000 -- Rating = 1043 -- Due Color: Black -- Due Color Strength: Absolute
+2. Player4 (ID = 4) -- Points = 2.000000 -- ARO = 1512.000000 -- Rating = 1238 -- Due Color: White -- Due Color Strength: Mild
+3. Player7 (ID = 7) -- Points = 2.000000 -- ARO = 1638.000000 -- Rating = 1038 -- Due Color: White -- Due Color Strength: Absolute
+
+## Step 83
+
+Picking the next upfloater on the list of upfloaters to try on the list: player with ID = 6, Name = Player6
+
+## Step 84
+
+Removing upfloater from lower score group...
+
+## Step 85
+
+Upflaoter has the due color Black. Inserting this player into Black Seekers and resorting this group again...
+
+## Step 86
+
+Group after inserting upfloater and sorting by pairing number...
+1. Player6 (ID = 6) -- Points = 2.000000 -- ARO = 1520.000000 -- Rating = 1043 -- Due Color: Black -- Due Color Strength: Absolute
+
+## Step 87
+
+### Score Group View After Inserting Upfloater
+
+|White Seekers                      |Black Seekers   |
+|Player3 (ARO = 1298.000000, ID = 3)|Player6 (ID = 6)|
+
+## Step 88
+
+White Seekers and Black Seekers groups are of even size. Attempting to pair them as follows: 1st player in White Seekers plays 1st player in Black Seekers, 2nd player in White Seekers plays 2nd player in Black Seekers, etc.
+
+## Step 89
+
+Player3 (ID = 3) (white) vs. Player6 (ID = 6) - Pairing incompatible!
+
+## Step 90
+
+Problem exists in pairing! Attempting to fix it using transpositions (rule 4.4)...
+
+## Step 91
+
+No good transpositions available!
+
+## Step 92
+
+Attempting to move shifters (swap players between White Seekers and Black Seekers until we could get a pairing working) following rule 4.3.
+
+## Step 93
+
+No shifters available to make a legal pairing in this score group!
+
+## Step 94
+
+Pairings could not be completed for score group!
+
+## Step 95
+
+Trying a different upfloater to see if pairings will be satisfied with this different upfloater...
+
+## Step 96
+
+Picking the next upfloater on the list of upfloaters to try on the list: player with ID = 4, Name = Player4
+
+## Step 97
+
+Removing upfloater from lower score group...
+
+## Step 98
+
+Upfloater has the due color White. Inserting this player into White Seekers and resorting this group again...
+
+## Step 99
+
+Group after inserting upfloater and sorting by ARO...
+1. Player3 (ID = 3) -- Points = 2.500000 -- ARO = 1298.000000 -- Rating = 1419 -- Due Color: White -- Due Color Strength: Alternation
+2. Player4 (ID = 4) -- Points = 2.000000 -- ARO = 1512.000000 -- Rating = 1238 -- Due Color: White -- Due Color Strength: Mild
+
+## Step 100
+
+### Score Group View After Inserting Upfloater
+
+|White Seekers                      |Black Seekers|
+|Player3 (ARO = 1298.000000, ID = 3)|             |
+|Player4 (ARO = 1512.000000, ID = 4)|             |
+
+## Step 101
+
+White Seekers group (2 players), Black Seekers group (0 players) are not the same size! Attempting to find optimal shifters to move (hopefully moving from the bigger group to the smaller, but if this is impossible, we will move some from both groups until the group can be paired). The players to be chosen to be moved from the larger group to the smaller group will be chosen as described in rule 4.3.3
+
+## Step 102
+
+Generating order of shifters to move...
+
+## Step 103
+
+Larger group has an even number of players. We pick the players to move as follows: take the middle player. The player to the left of this player as the largest priority to move, the middle player has the second priority to move, the player to the left of the left player has the third priority to move, the player to the right of the middle player has the fourth priority to move, etc.
+
+## Step 104
+
+
+1. Player3 (ID = 3)
+2. Player4 (ID = 4)
+
+## Step 105
+
+Smaller group has an even number of players. We pick the players to move as follows: take the middle player. The player to the left of this player as the largest priority to move, the middle player has the second priority to move, the player to the left of the left player has the third priority to move, the player to the right of the middle player has the fourth priority to move, etc.
+
+## Step 106
+
+
+
+## Step 107
+
+Move priorities all set up. First, try moving players from the larger group (given their move priority) to the smaller. If this cannot be accomplished, there is a chance that some players from the smaller group have to also be moved. But avoid this from happening.
+
+## Step 108
+
+Shifter found! Shifting Player3 (ID = 3) from White Seekers to Black Seekers.
+
+## Step 109
+
+Sorting White Seekers and Black Seekers again...
+
+## Step 110
+
+White Seekers after sorting by ARO:
+1. Player4 (ID = 4) -- Points = 2.000000 -- ARO = 1512.000000 -- Rating = 1238 -- Due Color: White -- Due Color Strength: Mild
+
+## Step 111
+
+Black Seekers after sorting by pairing number:
+1. Player3 (ID = 3) -- Points = 2.500000 -- ARO = 1298.000000 -- Rating = 1419 -- Due Color: White -- Due Color Strength: Alternation
+
+## Step 112
+
+### New White Seekers and Black Seekers for Pairing
+
+|White Seekers                      |Black Seekers   |
+|Player4 (ARO = 1512.000000, ID = 4)|Player3 (ID = 3)|
+
+## Step 113
+
+Both group sizes are now even. Attempting to pair them...
+
+## Step 114
+
+White Seekers and Black Seekers groups are of even size. Attempting to pair them as follows: 1st player in White Seekers plays 1st player in Black Seekers, 2nd player in White Seekers plays 2nd player in Black Seekers, etc.
+
+## Step 115
+
+Player4(ID = 4) (white) vs. Player3 (ID = 3) - OK
+
+## Step 116
+
+No problems in pairings. Correcting pairings to give due colors to correct players...
+
+## Step 117
+
+Games after optimizing colors:
+Player4 (ID = 4) (white) - Player3(ID = 3)
+
+## Step 118
+
+Pairing for group completed successfully!
+
+## Step 119
+
+Attempting to pair next group...
+
+## Step 120
+
+Doing pairings for score group with points: 2.000000
+
+## Step 121
+
+Split players into groups. Those who have the due color White go into the "White Seekers" Group while those who are due Black go into the "Black Seekers" Group.
+
+## Step 122
+
+White Seekers (sorted by ARO)
+1. Player7 (ID = 7) -- Points = 2.000000 -- ARO = 1638.000000 -- Rating = 1038 -- Due Color: White -- Due Color Strength: Absolute
+
+## Step 123
+
+Black Seekers (sorted by pairing number)
+1. Player6 (ID = 6) -- Points = 2.000000 -- ARO = 1520.000000 -- Rating = 1043 -- Due Color: Black -- Due Color Strength: Absolute
+
+## Step 124
+
+### Score Group View
+
+|White Seekers                      |Black Seekers   |
+|Player7 (ARO = 1638.000000, ID = 7)|Player6 (ID = 6)|
+
+## Step 125
+
+White Seekers and Black Seekers groups are of even size. Attempting to pair them as follows: 1st player in White Seekers plays 1st player in Black Seekers, 2nd player in White Seekers plays 2nd player in Black Seekers, etc.
+
+## Step 126
+
+Player7(ID = 7) (white) vs. Player6 (ID = 6) - OK
+
+## Step 127
+
+No problems in pairings. Correcting pairings to give due colors to correct players...
+
+## Step 128
+
+Games after optimizing colors:
+Player7 (ID = 7) (white) - Player6(ID = 6)
+
+## Step 129
+
+Pairing for group completed successfully!
+
+## Step 130
+
+Attempting to pair next group...
+
+## Step 131
+
+Pairing successfully completed for this score group and all the lower ones!
+
+## Step 132
+
+Pairing successfully completed for this score group and all the lower ones!
+
+## Step 133
+
+Pairing successfully completed for this score group and all the lower ones!

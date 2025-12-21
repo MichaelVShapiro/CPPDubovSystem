@@ -26,6 +26,8 @@
 #include <queue>
 #include <random>
 #include <stack>
+#include <unordered_map>
+#include <unordered_set>
 #include "assertm.h"
 
 CPPDubovSystem::MatchEval::MatchEval(const Player &white, const Player &black, bool problem): Match(white, black, false) {
@@ -250,7 +252,9 @@ std::vector<CPPDubovSystem::Player> CPPDubovSystem::Tournament::findUpfloaters(L
     
     // look through sorted partition and evaluate with given score
     LinkedListNode* curr = &next_group;
+    std::string logger_curr_group = "### Looking For Upfloaters";
     while(curr != nullptr) {
+        logger_curr_group += "\n\nLooking into next score group and picking all possible upfloaters...";
         std::vector<Player> upfloater_max;
         std::vector<Player> wrong_color; // C.7 minimize players who don't get their color preference
         std::vector<Player> upfloated_previous; // C.10 minimize upfloaters who upfloated previously
@@ -259,26 +263,32 @@ std::vector<CPPDubovSystem::Player> CPPDubovSystem::Tournament::findUpfloaters(L
             // we can ignore all the float history if it is the last round
             if(!curr->data[i].canUpfloat(this->total_rounds) && this->current_round != this->total_rounds) {
                 upfloater_max.push_back(curr->data[i]);
+                logger_curr_group += "\nPlayer with ID " + std::to_string(curr->data[i].getID()) + "(" + curr->data[i].getName() + ") is a max upfloater, and this round is not the last round. Putting this player as one who should receive less priority for being an upfloater...";
                 continue;
             }
             // C.10 minimize upfloaters who upfloated previously
             if(curr->data[i].upfloatedPreviously() && this->current_round != this->total_rounds) {
                 upfloated_previous.push_back(curr->data[i]);
+                logger_curr_group += "\nPlayer with ID " + std::to_string(curr->data[i].getID()) + "(" + curr->data[i].getName() + ") upfloated previously, and this round is not the last round. Putting this player as one who should receive less priority for being an upfloater (but more over the max upfloater)...";
                 continue;
             }
 //            if(imbalance == 1) {
             if(imbalance > 0) {
                 if(curr->data[i].getDueColor() == Color::WHITE) {
                     wrong_color.push_back(curr->data[i]);
+                    logger_curr_group += "\nPlayer with ID " + std::to_string(curr->data[i].getID()) + "(" + curr->data[i].getName() + ") has the wrong due color (the majority of players in the score group requiring upfloaters have more Black Seekers than White). Putting this player as one who should receive less priority for being an upfloater...";
                     continue;
                 }
                 upfloaters.push_back(curr->data[i]);
+                logger_curr_group += "\nPlayer with ID " + std::to_string(curr->data[i].getID()) + "(" + curr->data[i].getName() + ") is a possible upfloater with greater priority for becoming an upfloater. Putting this player closer to the top...";
             } else {
                 if(curr->data[i].getDueColor() == Color::BLACK || curr->data[i].getDueColor() == Color::NO_COLOR) {
                     wrong_color.push_back(curr->data[i]);
+                    logger_curr_group += "\nPlayer with ID " + std::to_string(curr->data[i].getID()) + "(" + curr->data[i].getName() + ") has the wrong due color (the majority of players in the score group requiring upfloaters have more White Seekers than Black). Putting this player as one who should receive less priority for being an upfloater...";
                     continue;
                 }
                 upfloaters.push_back(curr->data[i]);
+                logger_curr_group += "\nPlayer with ID " + std::to_string(curr->data[i].getID()) + "(" + curr->data[i].getName() + ") is a possible upfloater with greater priority for becoming an upfloater. Putting this player closer to the top...";
             }
         }
         
@@ -400,6 +410,32 @@ void CPPDubovSystem::Tournament::getExchangeShifters(std::vector<Player> &white_
     if(matched.first.size() == 0) {
         error = true;
         return;
+    }
+    
+    // do some logging before we even output who is moved
+    if(this->enable_logging) {
+        // generate migration queue
+        this->logExplanation("Generating order of shifters to move...");
+        auto logger = [](const std::vector<int> &migration, const std::vector<Player> &group) {
+            std::string migration_txt;
+            for(int i = 0; i < migration.size(); i++) {
+                migration_txt += "\n" + std::to_string(i + 1) + ". " + group[migration[i]].getName() + " (ID = " + std::to_string(group[migration[i]].getID()) + ")";
+            }
+            return migration_txt;
+        };
+        if(white_seekers.size() % 2 > 0 && !white_seekers.empty()) {
+            this->logExplanation("White Seekers group has an odd number of players. We pick the players to move as follows: take the middle player (this has largest priority to move), the player left of that middle player (this is second priority to move), the player right of that middle player (this is third priority to move), the player left of that left player (this is fourth priority), etc.");
+        } else {
+            this->logExplanation("White Seekers group has an even number of players. We pick the players to move as follows: take the middle player. The player to the left of this player as the largest priority to move, the middle player has the second priority to move, the player to the left of the left player has the third priority to move, the player to the right of the middle player has the fourth priority to move, etc.");
+        }
+        this->logExplanation(logger(w_migration, white_seekers));
+        if(black_seekers.size() % 2 > 0 && !black_seekers.empty()) {
+            this->logExplanation("Black Seekers group has an odd number of players. We pick the players to move as follows: take the middle player (this has largest priority to move), the player left of that middle player (this is second priority to move), the player right of that middle player (this is third priority to move), the player left of that left player (this is fourth priority), etc.");
+        } else {
+            this->logExplanation("Black Seekers group has an even number of players. We pick the players to move as follows: take the middle player. The player to the left of this player as the largest priority to move, the middle player has the second priority to move, the player to the left of the left player has the third priority to move, the player to the right of the middle player has the fourth priority to move, etc.");
+        }
+        this->logExplanation(logger(b_migration, black_seekers));
+        this->logExplanation("Try to swap players of similar priorities. For example, player with the highest priority in White Seekers should be swapped with the player with the highest priority in Black Seekers.");
     }
     
     for(std::list<int>::iterator it = matched.first.begin(); it != matched.first.end(); it++) {
@@ -646,6 +682,34 @@ void CPPDubovSystem::Tournament::applyStandardShifters(std::vector<Player> &whit
     std::set<int> w_remove;
     std::set<int> b_remove;
     
+    // do some logging before we even output who is moved
+    if(this->enable_logging) {
+        // generate migration queue
+        this->logExplanation("Generating order of shifters to move...");
+        std::vector<int> temp = this->generateMigrationQueue(larger_group);
+        auto logger = [](const std::vector<int> &migration, const std::vector<Player> &group) {
+            std::string migration_txt;
+            for(int i = 0; i < migration.size(); i++) {
+                migration_txt += "\n" + std::to_string(i + 1) + ". " + group[migration[i]].getName() + " (ID = " + std::to_string(group[migration[i]].getID()) + ")";
+            }
+            return migration_txt;
+        };
+        if(larger_group.size() % 2 > 0) {
+            this->logExplanation("Larger group has an odd number of players. We pick the players to move as follows: take the middle player (this has largest priority to move), the player left of that middle player (this is second priority to move), the player right of that middle player (this is third priority to move), the player left of that left player (this is fourth priority), etc.");
+        } else {
+            this->logExplanation("Larger group has an even number of players. We pick the players to move as follows: take the middle player. The player to the left of this player as the largest priority to move, the middle player has the second priority to move, the player to the left of the left player has the third priority to move, the player to the right of the middle player has the fourth priority to move, etc.");
+        }
+        this->logExplanation(logger(temp, larger_group));
+        temp = this->generateMigrationQueue(smaller_group);
+        if(larger_group.size() % 2 > 0) {
+            this->logExplanation("Smaller group has an odd number of players. We pick the players to move as follows: take the middle player (this has largest priority to move), the player left of that middle player (this is second priority to move), the player right of that middle player (this is third priority to move), the player left of that left player (this is fourth priority), etc.");
+        } else {
+            this->logExplanation("Smaller group has an even number of players. We pick the players to move as follows: take the middle player. The player to the left of this player as the largest priority to move, the middle player has the second priority to move, the player to the left of the left player has the third priority to move, the player to the right of the middle player has the fourth priority to move, etc.");
+        }
+        this->logExplanation(logger(temp, smaller_group));
+        this->logExplanation("Move priorities all set up. First, try moving players from the larger group (given their move priority) to the smaller. If this cannot be accomplished, there is a chance that some players from the smaller group have to also be moved. But avoid this from happening.");
+    }
+    
     // else find the players who we move, and do the move
     for(std::list<int>::iterator it = matched.first.begin(); it != matched.first.end(); it++) {
         std::pair<int, int> e = g_main.GetEdge(*it);
@@ -658,17 +722,21 @@ void CPPDubovSystem::Tournament::applyStandardShifters(std::vector<Player> &whit
             // pick the one with the smaller priority to move
             if(move_priority[e.first].first < move_priority[e.second].first) {
                 if(e1_col == Color::WHITE) {
+                    this->logExplanation("Shifter found! Shifting " + white_seekers[move_priority[e.first].second].getName() + " (ID = " + std::to_string(white_seekers[move_priority[e.first].second].getID()) + ") from White Seekers to Black Seekers.");
                     black_seekers.push_back(white_seekers[move_priority[e.first].second]);
                     w_remove.insert(move_priority[e.first].second);
                 } else {
+                    this->logExplanation("Shifter found! Shifting " + black_seekers[move_priority[e.first].second].getName() + " (ID = " + std::to_string(black_seekers[move_priority[e.first].second].getID()) + ") from Black Seekers to White Seekers.");
                     white_seekers.push_back(black_seekers[move_priority[e.first].second]);
                     b_remove.insert(move_priority[e.first].second);
                 }
             } else {
                 if(e1_col == Color::WHITE) {
+                    this->logExplanation("Shifter found! Shifting " + white_seekers[move_priority[e.first].second].getName() + " (ID = " + std::to_string(white_seekers[move_priority[e.first].second].getID()) + ") from White Seekers to Black Seekers.");
                     black_seekers.push_back(white_seekers[move_priority[e.second].second]);
                     w_remove.insert(move_priority[e.second].second);
                 } else {
+                    this->logExplanation("Shifter found! Shifting " + black_seekers[move_priority[e.first].second].getName() + " (ID = " + std::to_string(black_seekers[move_priority[e.first].second].getID()) + ") from Black Seekers to White Seekers.");
                     white_seekers.push_back(black_seekers[move_priority[e.second].second]);
                     b_remove.insert(move_priority[e.second].second);
                 }
@@ -695,8 +763,15 @@ void CPPDubovSystem::Tournament::applyStandardShifters(std::vector<Player> &whit
     ASSERT(white_seekers.size() == black_seekers.size(), "white_seekers and black_seekers are not of equal length after shifters have been moved. This is a bug and should be unlikely to happen");
     
     // now resort the groups
+    this->logExplanation("Sorting White Seekers and Black Seekers again...");
     this->sortGroupARO(&white_seekers, 0, ((int) white_seekers.size()) - 1);
-    Utils::sortPlayersRating(&black_seekers, 0, ((int) black_seekers.size()) - 1);
+//    Utils::sortPlayersRating(&black_seekers, 0, ((int) black_seekers.size()) - 1);
+    std::sort(black_seekers.begin(), black_seekers.end(), [](const Player &a, const Player &b) {
+        return a.getID() < b.getID();
+    });
+    
+    this->logPlayers(white_seekers, "White Seekers after sorting by ARO:");
+    this->logPlayers(black_seekers, "Black Seekers after sorting by pairing number:");
 }
 
 std::shared_ptr<CPPDubovSystem::Tournament::eval_games> CPPDubovSystem::Tournament::nextTransposition(std::vector<Player> &white_seekers, std::vector<Player> &black_seekers, int pof) {
@@ -717,7 +792,10 @@ std::shared_ptr<CPPDubovSystem::Tournament::eval_games> CPPDubovSystem::Tourname
     }
     
     // make sure pivot_include is sorted properly
-    Utils::sortPlayersRating(&pivot_include, 0, ((int) pivot_include.size()) - 1);
+//    Utils::sortPlayersRating(&pivot_include, 0, ((int) pivot_include.size()) - 1);
+    std::sort(pivot_include.begin(), pivot_include.end(), [](const Player &a, const Player &b){
+        return a.getID() < b.getID();
+    });
     bool touched_pivot = false;
     // pick first element in pivot_include which white seeker at element pof can player
     int works = -1;
@@ -987,6 +1065,8 @@ std::vector<CPPDubovSystem::Match> CPPDubovSystem::Tournament::castToMatch(const
     
     // also perform optimization
     this->optimizeColors(&m);
+    
+    this->logMatches(m, "Games after optimizing colors:");
     
     return m;
 }
@@ -1692,16 +1772,19 @@ std::set<int> CPPDubovSystem::Tournament::findMultiUpfloaters(std::vector<Player
     
     std::set<int> upfloaters;
     // pick up upfloaters
+    std::string possible_upfloaters = "Found upfloaters that satisfy legal pairings! From the given list, after trying different upfloaters (in the given order from the list), the following produces the best pairings:";
     for(std::list<int>::iterator it = matched.first.begin(); it != matched.first.end(); it++) {
         std::pair<int, int> e = g_main.GetEdge(*it);
         if(g_in.contains(p_reverse[e.first].getID()) && !g_in.contains(p_reverse[e.second].getID())) {
             // upfloater found!
             num_in += 1;
             upfloaters.insert(p_reverse[e.second].getID());
+            possible_upfloaters += "\n- Player with ID = " + std::to_string(p_reverse[e.second].getID()) + ", Name = " + p_reverse[e.second].getName() + ", Points = " + std::to_string(p_reverse[e.second].getPoints());
         } else if(!g_in.contains(p_reverse[e.first].getID()) && g_in.contains(p_reverse[e.second].getID())) {
             // upfloater found!
             num_in += 1;
             upfloaters.insert(p_reverse[e.first].getID());
+            possible_upfloaters += "\n- Player with ID = " + std::to_string(p_reverse[e.second].getID()) + ", Name = " + p_reverse[e.second].getName() + ", Points = " + std::to_string(p_reverse[e.second].getPoints());
         } else if(g_in.contains(p_reverse[e.first].getID()) && g_in.contains(p_reverse[e.second].getID())) {
             num_in += 2;
         }
@@ -1712,8 +1795,360 @@ std::set<int> CPPDubovSystem::Tournament::findMultiUpfloaters(std::vector<Player
         }
     }
     
+    this->logExplanation(possible_upfloaters);
+    
     return upfloaters;
 }
+
+std::set<int> CPPDubovSystem::Tournament::findOptimalUpfloaters(std::vector<Player> &white_seekers, std::vector<Player> &black_seekers, LinkedListNode &next_group, bool &error) {
+    // initialize all vertecies in the graph
+    Graph g_main(0);
+    
+    // a way to identify all players
+    // the key is the id of the player
+    // the value is the vertex id (or index)
+    std::unordered_map<int, int> p_convert;
+    // all players a part of the current score group
+    // this would be all players in ws and bs
+    std::unordered_set<int> in_scoregroup;
+    // where all players are
+    // this is used to just get info
+    std::vector<Player> all_players;
+    // needed later
+    int scoregroup_size = ((int) white_seekers.size()) + ((int) black_seekers.size());
+    
+    // first add players in ws and bs
+    int valid_vertex_id = 0;
+    
+    for(int i = 0; i < white_seekers.size(); i++) {
+        // add vertex
+        g_main.AddVertex();
+        // set the id
+        p_convert[white_seekers[i].getID()] = valid_vertex_id;
+        // mark this player as one in the score group
+        in_scoregroup.insert(white_seekers[i].getID());
+        // add to all players
+        // what's nice is that the vertex id can identify the index here too!
+        all_players.push_back(white_seekers[i]);
+        
+        // increment valid vertex id as needed
+        valid_vertex_id++;
+    }
+    
+    for(int i = 0; i < black_seekers.size(); i++) {
+        g_main.AddVertex();
+        // same operation as ws
+        p_convert[black_seekers[i].getID()] = valid_vertex_id;
+        in_scoregroup.insert(black_seekers[i].getID());
+        all_players.push_back(black_seekers[i]);
+        valid_vertex_id++;
+    }
+    
+    // now add everyone in the lower score groups
+    LinkedListNode *temp1 = &next_group;
+    int begin_index = -1; // the index in all_players where non-residents of the current scoregroup are
+    while(temp1 != nullptr) {
+        // go through all players
+        for(int i = 0; i < temp1->data.size(); i++) {
+            // add vertex
+            g_main.AddVertex();
+            
+            // add id
+            p_convert[temp1->data[i].getID()] = valid_vertex_id;
+            
+            // add to all players
+            all_players.push_back(temp1->data[i]);
+            
+            // set begin index as needed
+            if(begin_index == -1) begin_index = valid_vertex_id;
+            
+            // increment valid id
+            valid_vertex_id++;
+        }
+        
+        // shift to next score group
+        temp1 = temp1->next;
+    }
+    
+    // set up the edge weights
+    
+    std::vector<double> cost; // edge weights
+    
+    // add all the internal edges
+    // that is set up edges within the current score group
+    for(int i = 0; i < white_seekers.size(); i++) {
+        for(int z = 0; z < black_seekers.size(); z++) {
+            // are these two players compatible?
+            if(white_seekers[i].canPlayOpp(black_seekers[z])) {
+                g_main.AddEdge(p_convert[white_seekers[i].getID()], p_convert[black_seekers[z].getID()]);
+                cost.push_back(0); // make this pairing seem very favorable
+            }
+        }
+        
+        // also pair against self
+        for(int z = i + 1; z < white_seekers.size(); z++) {
+            if(white_seekers[i].canPlayOpp(white_seekers[z])) {
+                g_main.AddEdge(p_convert[white_seekers[i].getID()], p_convert[white_seekers[z].getID()]);
+                cost.push_back(1); // just a small lift to make the pairing seem less favorable
+            }
+        }
+    }
+    
+    for(int i = 0; i < black_seekers.size(); i++) {
+        for(int z = i + 1; z < black_seekers.size(); z++) {
+            if(black_seekers[i].canPlayOpp(black_seekers[z])) {
+                g_main.AddEdge(p_convert[black_seekers[i].getID()], p_convert[black_seekers[z].getID()]);
+                cost.push_back(1);
+            }
+        }
+    }
+    
+    // now do the lower scoregroups
+    // first try pairing all lower players against the current score group
+    for(int i = 0; i < begin_index; i++) { // this captures all players in current score group
+        for(int z = begin_index; z < all_players.size(); z++) {
+            // are both players compatible?
+            if(all_players[i].canPlayOpp(all_players[z])) {
+                g_main.AddEdge(p_convert[all_players[i].getID()], p_convert[all_players[z].getID()]);
+                
+                // now to determine edge weight
+                double edge_weight = 0;
+                
+                // 2.3.6 [C10] minimize upfloaters who upfloated in the prev round (unless it is the last round of course)
+                if(all_players[z].upfloatedPreviously() && this->current_round != this->total_rounds) {
+                    edge_weight  = 1; // make less favorable
+                }
+                
+                // 2.3.5 [C9] minimize number of max upfloaters who upfloated while being a max upfloater (unless it is the last round)
+                if(!all_players[z].canUpfloat(this->total_rounds) && this->current_round != this->total_rounds) {
+                    edge_weight += all_players[z].getNumUpfloatedIfMaxUpfloater(this->total_rounds); // make less favorable
+                }
+                
+                // 2.3.4 [C8] minimize number of max upfloaters (unless it is the last round)
+                if(!all_players[z].canUpfloat(this->total_rounds) && this->current_round != this->total_rounds) {
+                    edge_weight += 2; // make less favorable
+                }
+                
+                // 2.3.3 [C7] minimize players who don't get their due color
+                if(all_players[i].getDueColor() == all_players[z].getDueColor() || (all_players[i].getDueColor() == Color::BLACK && all_players[z].getDueColor() == Color::NO_COLOR)) {
+                    edge_weight += 10;
+                }
+                
+                // 2.3.2 [C6] minimize score differences
+                double score_diff = all_players[i].getPoints() - all_players[z].getPoints();
+                edge_weight += score_diff * 10;
+                
+                // 2.3.1 [C5] (minimize upfloaters) is already handled
+                edge_weight += ((double) z) / 10.0; // this is our tiebreak so players with a smaller TPN are likely to be chosen
+                
+                cost.push_back(edge_weight);
+            }
+        }
+    }
+    
+    // now set edge weights for lower score groups
+    for(int i = begin_index; i < all_players.size(); i++) {
+        for(int z = i + 1; z < all_players.size(); z++) {
+            if(all_players[i].canPlayOpp(all_players[z])) {
+                g_main.AddEdge(p_convert[all_players[i].getID()], p_convert[all_players[z].getID()]);
+                cost.push_back(0);
+            }
+        }
+    }
+    
+    // apply the matching
+    Matching matching(g_main);
+    std::pair<std::list<int>, double> matched = matching.SolveMinimumCostPerfectMatching(cost);
+    
+    // were we successful?
+    if(matched.first.empty()) {
+        error = true;
+        return std::set<int>();
+    }
+    
+    // extract the matching
+    // and return the upfloater ids
+    int num_in = 0; // easy convenient way of being able to tell if we got all players in the score group paired
+    
+    std::set<int> upfloaters;
+    for(std::list<int>::iterator it = matched.first.begin(); it != matched.first.end(); it++) {
+        // get the edge
+        std::pair<int, int> e = g_main.GetEdge(*it);
+        
+        // check if either item is in the score group
+        if(in_scoregroup.contains(all_players[e.first].getID()) && !in_scoregroup.contains(all_players[e.second].getID())) {
+            // upfloater found!
+            num_in++; // only one score group member found
+            // add id of upfloater
+            upfloaters.insert(all_players[e.second].getID());
+        } else if(!in_scoregroup.contains(all_players[e.first].getID()) && in_scoregroup.contains(all_players[e.second].getID())) {
+            // upfloater found!
+            num_in++; // only one score group member found
+            // add id of upfloater
+            upfloaters.insert(all_players[e.first].getID());
+        } else if(in_scoregroup.contains(all_players[e.first].getID()) && in_scoregroup.contains(all_players[e.second].getID())) {
+            // both players are part of the score group!
+            num_in += 2; // since both players are in the score group
+        }
+        
+        if(num_in == scoregroup_size) break; // we got all players in score group
+    }
+    
+    return upfloaters;
+}
+
+//MARK: LOGGING FUNCTIONS
+void CPPDubovSystem::Tournament::logExplanation(const std::string &explanation) {
+    // only log if enabled
+    if(this->enable_logging) this->logger.log(explanation);
+}
+
+void CPPDubovSystem::Tournament::logPlayers(const std::vector<Player> &players, const std::string &extra_explanation) {
+    // if not applicable, then skip
+    if(!this->enable_logging) return;
+    std::string p_list; // where all players will be stored
+    
+    // add extra explanation as needed
+    p_list += extra_explanation;
+    
+    auto player_representer = [](Player &p) {
+        std::string due_color_str = "White";
+        std::string strength = "No Preference";
+        if(p.getDueColor() == Color::BLACK)
+            due_color_str = "Black";
+        else if(p.getDueColor() == Color::NO_COLOR)
+            due_color_str = "No Due Color";
+        if(p.getPreferenceStrength() == ColorPreference::ALTERNATION)
+            strength = "Alternation";
+        else if(p.getPreferenceStrength() == ColorPreference::MILD)
+            strength = "Mild";
+        else if(p.getPreferenceStrength() == ColorPreference::ABSOLUTE)
+            strength = "Absolute";
+        return p.getName() + " (ID = " + std::to_string(p.getID()) + ") -- Points = " + std::to_string(p.getPoints()) + " -- ARO = " + std::to_string(p.getARO()) + " -- Rating = " + std::to_string(p.getRating()) + " -- Due Color: " + due_color_str + " -- Due Color Strength: " + strength;
+    };
+    
+    if(!players.empty()) {
+        Player p1 = players[0];
+        if(!p_list.empty())
+            p_list += "\n1. " + player_representer(p1);
+        else
+            p_list = "1. " + player_representer(p1);
+        for(int i = 1; i < players.size(); i++) {
+            p1 = players[i];
+            p_list += "\n" + std::to_string(i + 1) + ". " + player_representer(p1);
+        }
+        
+        // finally log
+        this->logExplanation(p_list);
+    }
+}
+
+void CPPDubovSystem::Tournament::logMatches(const std::vector<Match> &games, const std::string &heading) {
+    // make sure we are logging
+    if(!this->enable_logging) return;
+    
+    // make sure we have something to log
+    if(games.empty()) return;
+    
+    // go through and log all players in the game
+    
+    std::string games_to_log = heading + "";
+    
+    for(auto i : games)
+        if(i.is_bye)
+            games_to_log += "\n" + i.white.getName() + " (ID = " + std::to_string(i.white.getID()) + ") - BYE";
+        else
+            games_to_log += "\n" + i.white.getName() + " (ID = " + std::to_string(i.white.getID()) + ") (white) - " + i.black.getName() + "(ID = " + std::to_string(i.black.getID()) + ")";
+    
+    this->logExplanation(games_to_log);
+}
+
+void CPPDubovSystem::Tournament::logMatches(const std::vector<MatchEval> &games, const std::string &heading) {
+    // make sure we are logging
+    if(!this->enable_logging) return;
+    
+    // make sure we have something to log
+    if(games.empty()) return;
+    
+    // go through and log all players in the game
+    
+    std::string games_to_log = heading + "";
+    
+    for(auto i : games)
+        if(i.is_bye)
+            games_to_log += "\n" + i.white.getName() + " (ID = " + std::to_string(i.white.getID()) + ") - BYE -> OK";
+        else
+            games_to_log += "\n" + i.white.getName() + " (ID = " + std::to_string(i.white.getID()) + ") (white) - " + i.black.getName() + "(ID = " + std::to_string(i.black.getID()) + ") -> " + (i.isProblem() ? "Pairing not compatible!" : "OK");
+    
+    this->logExplanation(games_to_log);
+}
+
+void CPPDubovSystem::Tournament::logScoreGroup(std::vector<Player> &white_seekers, std::vector<Player> &black_seekers, const std::string &heading) {
+    // if logging is disabled, don't do anything
+    if(!this->enable_logging) return;
+    // if ws and bs are empty, do nothing
+    if(white_seekers.empty() && black_seekers.empty()) return;
+    // set up the entire markdown table
+    int max_white_len = 13; // maximum length of one white seeker row
+    int max_black_len = 13; // maximum length of one black seeker row
+    std::vector<std::string> markdown_ws(white_seekers.size());
+    std::vector<std::string> markdown_bs(black_seekers.size());
+    int largest = std::max((int) white_seekers.size(), (int) black_seekers.size());
+    
+    int z = 0;
+    
+    // go through all white seekers
+    for(auto i : white_seekers) {
+        // create the full markdown for this player
+        std::string complete = i.getName() + " (ARO = " + std::to_string(i.getARO()) + ", ID = " + std::to_string(i.getID()) + ")";
+        max_white_len = std::max(max_white_len, (int) complete.size());
+        markdown_ws[z] = complete;
+        z += 1;
+    }
+    
+    // reset
+    z = 0;
+    
+    // now go through all black seekers
+    for(auto i : black_seekers) {
+        // create the full markdown for this player
+        std::string complete = i.getName() + " (ID = " + std::to_string(i.getID()) + ")";
+        max_black_len = std::max(max_black_len, (int) complete.size());
+        markdown_bs[z] = complete;
+        z += 1;
+    }
+    
+    // now complete the markdown table
+    std::string markdown_table = "|White Seekers";
+    for(int j = 13; j < max_white_len; j++)
+        markdown_table += " "; // just add a space for padding
+    markdown_table += "|Black Seekers";
+    for(int j = 13; j < max_black_len; j++)
+        markdown_table += " ";
+    markdown_table += "|";
+    
+    // now add the players from both groups
+    for(int i = 0; i < largest; i++) {
+        // add new line
+        markdown_table += "\n|";
+        // if white seeker has an empty spot, we add an empty string
+        if(i >= markdown_ws.size())
+            markdown_table += std::string(max_white_len, ' ') + "|";
+        else
+            markdown_table += markdown_ws[i] + std::string(max_white_len - ((int) markdown_ws[i].size()), ' ') + "|";
+        
+        // now do same for black seeker
+        if(i >= markdown_bs.size())
+            markdown_table += std::string(max_black_len, ' ') + "|";
+        else
+            markdown_table += markdown_bs[i] + std::string(max_black_len - ((int) markdown_bs[i].size()), ' ') + "|";
+    }
+    
+    // finally log the table!
+    this->logger.log(heading + "\n\n" + markdown_table);
+}
+
+//MARK: END LOGGING FUNCTIONS
 
 CPPDubovSystem::LinkedListNode CPPDubovSystem::Tournament::makeNewGroups(const LinkedListNode &old_groups, const std::set<int> &upfloaters, std::vector<Player> *white_seekers, std::vector<Player> *black_seekers) const {
     // go through each groups and remove them
@@ -1747,29 +2182,36 @@ std::vector<CPPDubovSystem::Match> CPPDubovSystem::Tournament::maximizePairings(
     
     // pair players while also keeping track of problems
     if(white_seekers.size() == black_seekers.size()) {
+        this->logExplanation("White Seekers and Black Seekers groups are of even size. Attempting to pair them as follows: 1st player in White Seekers plays 1st player in Black Seekers, 2nd player in White Seekers plays 2nd player in Black Seekers, etc.");
         for(int i = 0; i < white_seekers.size(); i++) {
 //            games.push_back(Match(white_seekers[i], black_seekers[i], false));
             if(!white_seekers[i].canPlayOpp(black_seekers[i])) {
                 problem = true;
                 games.push_back(MatchEval(white_seekers[i], black_seekers[i], true));
                 board_problems.push_back(((int) games.size()) - 1);
+                this->logExplanation(white_seekers[i].getName() + " (ID = " + std::to_string(white_seekers[i].getID()) + ") (white) vs. " + black_seekers[i].getName() + " (ID = " + std::to_string(black_seekers[i].getID()) + ") (black) - Pairing incompatible!");
             } else {
                 games.push_back(MatchEval(white_seekers[i], black_seekers[i], false));
+                this->logExplanation(white_seekers[i].getName() + "(ID = " + std::to_string(white_seekers[i].getID()) + ") (white) vs. " + black_seekers[i].getName() + " (ID = " + std::to_string(black_seekers[i].getID()) + ") (black) - OK");
             }
         }
         
         if(!problem) {
+            this->logExplanation("No problems in pairings. Correcting pairings to give due colors to correct players...");
             // no problems we are good
             return this->castToMatch(games);
         }
         
         // reset games for transpositions
         bool error_occured = false;
+        this->logExplanation("Problem exists in pairing! Attempting to fix it using transpositions (rule 4.4)...");
         this->evaluateTranspositions(&games, white_seekers, black_seekers, &error_occured);
         if(error_occured) {
+            this->logExplanation("No good transpositions available!");
             
             // check if shifters were recently applied
             if(this->applied_shifters) {
+                this->logExplanation("Already tried applying shifters, and no good pairing exists.");
                 // simply apply different shifters
                 *pairing_error = true;
                 return std::vector<Match>();
@@ -1782,10 +2224,12 @@ std::vector<CPPDubovSystem::Match> CPPDubovSystem::Tournament::maximizePairings(
             std::vector<int> w_shifters;
             std::vector<int> b_shifters;
             bool shifter_error = false;
+            this->logExplanation("Attempting to move shifters (swap players between White Seekers and Black Seekers until we could get a pairing working) following rule 4.3.");
             this->getExchangeShifters(white_seekers, black_seekers, w_shifters, b_shifters, shifter_error);
             
             // check for errors
             if(shifter_error) {
+                this->logExplanation("No shifters available to make a legal pairing in this score group!");
                 // nothing more can be done since even the graph couldn't find a way to maximize the pairings
                 *pairing_error = true;
                 return std::vector<Match>();
@@ -1797,17 +2241,28 @@ std::vector<CPPDubovSystem::Match> CPPDubovSystem::Tournament::maximizePairings(
             ASSERT(w_shifters.size() == b_shifters.size(), "shifters for white seekers and black seekers were not equal. This is a bug, and should be very unlikely to happen.");
             
             // now create the swaps and recursively call this function again
+            this->logExplanation("Found set of shifters to exchange to make a legal pairing! Making swaps...");
             for(int i = 0; i < w_shifters.size(); i++) {
                 Player wc = white_seekers[w_shifters[i]];
+                this->logExplanation(wc.getName() + " (ID = " + std::to_string(wc.getID()) + ", current White Seeker) exchanges with " + black_seekers[b_shifters[i]].getName() + " (ID = " + std::to_string(black_seekers[b_shifters[i]].getID()) + ", current Black Seeker)");
                 white_seekers[w_shifters[i]] = black_seekers[b_shifters[i]];
                 black_seekers[b_shifters[i]] = wc;
             }
             
             // lastly, apply the re-sorting
-            Utils::sortPlayersRating(&black_seekers, 0, ((int) black_seekers.size()) - 1);
+            this->logExplanation("Sorting both White Seekers and Black Seekers again...");
+//            Utils::sortPlayersRating(&black_seekers, 0, ((int) black_seekers.size()) - 1);
+            std::sort(black_seekers.begin(), black_seekers.end(), [](const Player &a, const Player &b){
+                return a.getID() < b.getID();
+            });
             this->sortGroupARO(&white_seekers, 0, ((int) white_seekers.size()) - 1);
             
+            this->logPlayers(white_seekers, "White Seekers after sorting by ARO:");
+            this->logPlayers(black_seekers, "Black Seekers after sorting by pairing number:");
+            this->logScoreGroup(white_seekers, black_seekers, "### New set up for the pairing table");
+            
             // now return a newly improved pairing
+            this->logExplanation("Try pairing players again...");
             return this->maximizePairings(white_seekers, black_seekers, pairing_error);
         }
     } else {
@@ -1832,14 +2287,18 @@ std::vector<CPPDubovSystem::Match> CPPDubovSystem::Tournament::maximizePairings(
             Utils::sortGroupARO(&white_seekers, 0, ((int) white_seekers.size()) - 1);
             Utils::sortPlayersRating(&black_seekers, 0, ((int) black_seekers.size()) - 1);
         }*/
+        this->logExplanation("White Seekers group (" + std::to_string(white_seekers.size()) + " players), Black Seekers group (" + std::to_string(black_seekers.size()) + " players) are not the same size! Attempting to find optimal shifters to move (hopefully moving from the bigger group to the smaller, but if this is impossible, we will move some from both groups until the group can be paired). The players to be chosen to be moved from the larger group to the smaller group will be chosen as described in rule 4.3.3");
         this->applyStandardShifters(white_seekers, black_seekers, error_on_move);
         
         // check for errors
         if(error_on_move) {
+            this->logExplanation("No good set of shifters found! Group cannot be paired.");
             // we can do no more from here
             *pairing_error = true;
             return this->castToMatch(games);
         }
+        
+        this->logScoreGroup(white_seekers, black_seekers, "### New White Seekers and Black Seekers for Pairing");
         
         // mark that shifters were applied
         this->applied_shifters = true;
@@ -1847,6 +2306,7 @@ std::vector<CPPDubovSystem::Match> CPPDubovSystem::Tournament::maximizePairings(
         // now that sizes are equal, we can re-evaluate
         // we can call this function recursively since the base case was touched
         bool check = false;
+        this->logExplanation("Both group sizes are now even. Attempting to pair them...");
         std::vector<Match> output = this->maximizePairings(white_seekers, black_seekers, &check);
         
         /*if(check) {
@@ -1995,10 +2455,12 @@ void CPPDubovSystem::Tournament::optimizeColors(std::vector<Match> *games) {
             pref_equiv[ColorPreference::NO_PREFERENCE] = 0;
             if(gc == Color::WHITE) {
                 if(pref_equiv[bp] > pref_equiv[wp]) {
+                    this->logExplanation((*games)[i].black.getName() + " (ID = " + std::to_string((*games)[i].black.getID()) + ") has greater priority for due color White over: " + (*games)[i].white.getName() + " (ID = " + std::to_string((*games)[i].white.getID()) + ". Swapping colors for these two players...");
                     (*games)[i] = Match((*games)[i].black, (*games)[i].white, false);
                 } else if(pref_equiv[bp] == pref_equiv[wp]) {
                     // check if black should be swapped
                     if((*games)[i].black.shouldAlternate((*games)[i].white)) {
+                        this->logExplanation((*games)[i].black.getName() + " (ID = " + std::to_string((*games)[i].black.getID()) + ") has greater priority for due color White over: " + (*games)[i].white.getName() + " (ID = " + std::to_string((*games)[i].white.getID()) + ". Swapping colors for these two players...");
                         (*games)[i] = Match((*games)[i].black, (*games)[i].white, false);
                     }
                 }
@@ -2007,10 +2469,12 @@ void CPPDubovSystem::Tournament::optimizeColors(std::vector<Match> *games) {
 //                }
             } else if(gc == Color::BLACK) {
                 if(pref_equiv[wp] > pref_equiv[bp]) {
+                    this->logExplanation((*games)[i].white.getName() + " (ID = " + std::to_string((*games)[i].white.getID()) + ") has greater priority for due color Black over: " + (*games)[i].black.getName() + " (ID = " + std::to_string((*games)[i].black.getID()) + ". Swapping colors for these two players...");
                     (*games)[i] = Match((*games)[i].black, (*games)[i].white, false);
                 } else if(pref_equiv[wp] == pref_equiv[bp]) {
                     // check if white should be swapped
                     if((*games)[i].white.shouldAlternate((*games)[i].black)) {
+                        this->logExplanation((*games)[i].white.getName() + " (ID = " + std::to_string((*games)[i].white.getID()) + ") has greater priority for due color Black over: " + (*games)[i].black.getName() + " (ID = " + std::to_string((*games)[i].black.getID()) + ". Swapping colors for these two players...");
                         (*games)[i] = Match((*games)[i].black, (*games)[i].white, false);
                     }
                 }
@@ -2036,9 +2500,11 @@ void CPPDubovSystem::Tournament::optimizeColors(std::vector<Match> *games) {
 //                }
                 if((*games)[i].white < (*games)[i].black && (*games)[i].black.getID() % 2 == 0) {
                     // we do the swap!
+                    this->logExplanation((*games)[i].white.getName() + " (ID = " + std::to_string((*games)[i].white.getID()) + ") has greater priority for due color Black over (5.2.1 -> initial color goes to odd numbered player): " + (*games)[i].black.getName() + " (ID = " + std::to_string((*games)[i].black.getID()) + ". Swapping colors for these two players...");
                     (*games)[i] = Match((*games)[i].black, (*games)[i].white, false);
                 } else if((*games)[i].white > (*games)[i].black && (*games)[i].white.getID() % 2 == 0) {
                     // we also do the swap!
+                    this->logExplanation((*games)[i].white.getName() + " (ID = " + std::to_string((*games)[i].white.getID()) + ") has greater priority for due color Black over (5.2.1 -> initial color goes to odd numbered player): " + (*games)[i].black.getName() + " (ID = " + std::to_string((*games)[i].black.getID()) + ". Swapping colors for these two players...");
                     (*games)[i] = Match((*games)[i].black, (*games)[i].white, false);
                 }
             }
@@ -2047,11 +2513,13 @@ void CPPDubovSystem::Tournament::optimizeColors(std::vector<Match> *games) {
             if(gc == Color::NO_COLOR) {
                 // check if black has a preference for white
                 if((*games)[i].black.getDueColor() == Color::WHITE) {
+                    this->logExplanation((*games)[i].white.getName() + " (ID = " + std::to_string((*games)[i].white.getID()) + ") has no due color! Black, " + (*games)[i].black.getName() + " (ID = " + std::to_string((*games)[i].black.getID()) + ", has the due color of White though. Swapping colors for these two players...");
                     (*games)[i] = Match((*games)[i].black, (*games)[i].white, false);
                 }
             } else {
                 // check if black player has no preference and white wants black
                 if((*games)[i].black.getDueColor() == Color::NO_COLOR && gc == Color::BLACK) {
+                    this->logExplanation((*games)[i].white.getName() + " (ID = " + std::to_string((*games)[i].white.getID()) + ") has a due color while Black has none, " + (*games)[i].black.getName() + " (ID = " + std::to_string((*games)[i].black.getID()) + ". Swapping colors for these two players...");
                     (*games)[i] = Match((*games)[i].black, (*games)[i].white, false);
                 }
             }
@@ -2358,7 +2826,10 @@ std::vector<CPPDubovSystem::Match> CPPDubovSystem::Tournament::makeRound1() {
     int middle = floor(this->player_count / 2);
     int opp = floor(this->player_count / 2);
     Color curr = this->round1_top_board_white ? Color::WHITE : Color::BLACK;
-    Utils::sortPlayersRating(&this->players, 0, this->player_count - 1);
+//    Utils::sortPlayersRating(&this->players, 0, this->player_count - 1);
+    std::sort(this->players.begin(), this->players.end(), [](const Player &a, const Player &b){
+        return a.getID() < b.getID();
+    });
     // round 1 pairings simply follow the rule of top half vs bottom half
     // and colors alternate for the upper half as we go down
     // this framework however is designed to give white to the top player by default
@@ -2445,20 +2916,34 @@ std::vector<CPPDubovSystem::Match> CPPDubovSystem::Tournament::makePairingForGro
     std::vector<Player> upfloaters_multi;
     bool floater_required = false;
     
+    if(g->data.size() > 0)
+        this->logExplanation("Doing pairings for score group with points: " + std::to_string(g->data[0].getPoints()));
+    
     // make groups
     this->splitGroups(&white_seekers, &black_seekers, g->data);
     
     // sort groups
     this->sortGroupARO(&white_seekers, 0, ((int) white_seekers.size()) - 1);
-    Utils::sortPlayersRating(&black_seekers, 0, ((int) black_seekers.size()) - 1);
+//    Utils::sortPlayersRating(&black_seekers, 0, ((int) black_seekers.size()) - 1);
+    std::sort(black_seekers.begin(), black_seekers.end(), [](const Player &a, const Player &b) {
+        return a.getID() < b.getID();
+    });
+    
+    this->logExplanation("Split players into groups. Those who have the due color White go into the \"White Seekers\" Group while those who are due Black go into the \"Black Seekers\" Group.");
+    this->logPlayers(white_seekers, "White Seekers (sorted by ARO)");
+    this->logPlayers(black_seekers, "Black Seekers (sorted by pairing number)");
+    
+    this->logScoreGroup(white_seekers, black_seekers, "### Score Group View");
     
     int num_white = (int) white_seekers.size();
     int num_black = (int) black_seekers.size();
     
     // now check if upfloater is needed for this group in order to complete pairings
     if(g->data.size() % 2 > 0) {
+        this->logExplanation("Group has an odd number of players! Attempting to pick an upfloater...");
         // make sure there is a next group
         if(g->next == nullptr) {
+            this->logExplanation("Lower score group does not exist! Backtracking to previous group to try to fix this error...");
             // can't do anything more from here!
             this->pairing_error = true;
             if(contains_upfloaters) {
@@ -2468,9 +2953,11 @@ std::vector<CPPDubovSystem::Match> CPPDubovSystem::Tournament::makePairingForGro
         }
         // find upfloater that satisfies pairings
         upfloaters = this->findUpfloaters(*g->next, num_white - num_black);
+        this->logPlayers(upfloaters, "Possible upfloaters (properly sorted by the following: score differences amongst players minimized, players closer to the top of the list are not max upfloaters or upfloated previously, and have the proper due color that would go to the group of seekers with less players).");
         
         // make sure there is at least one valid upfloater present
         if(upfloaters.size() == 0) {
+            this->logExplanation("No upfloaters found! Backtracking to previous group to try to fix this error...");
             this->pairing_error = true;
             // put back upfloater if needed
             if(contains_upfloaters) {
@@ -2483,7 +2970,7 @@ std::vector<CPPDubovSystem::Match> CPPDubovSystem::Tournament::makePairingForGro
     
     // attempt to pair the group
     bool pair_complete = false;
-    bool pairing_failure_upfloaters = false;
+//    bool pairing_failure_upfloaters = false;
     std::vector<Player> upfloaters_move_container; // for storing tried upfloaters
 //    unsigned int max_upfloater_move = 2;
     while(!pair_complete) {
@@ -2492,9 +2979,10 @@ std::vector<CPPDubovSystem::Match> CPPDubovSystem::Tournament::makePairingForGro
         std::vector<Player> b_copy = std::vector<Player>(black_seekers);
         LinkedListNode *next_group_use = g->next == nullptr ? nullptr : (new LinkedListNode(*(g->next)));
         // check if we have any floaters
-        if(floater_required) {
+        /*if(floater_required) {
             if(upfloaters.size() == 0) {
                 // no floaters left
+                this->logExplanation("Group requires an upfloater, but no more possible upfloaters exist! Backtracking to previous group to try to fix this error...");
                 this->pairing_error = true;
                 if(contains_upfloaters) {
                     g->data.push_back(upfloater);
@@ -2506,30 +2994,78 @@ std::vector<CPPDubovSystem::Match> CPPDubovSystem::Tournament::makePairingForGro
             // dequeue the floater and add to list
             Player floater = upfloaters[0];
             upfloaters.erase(upfloaters.begin());
+            // FIX: issue8
+            // if we have exhausted our upfloaters, set that there are no more floaters reuqired and let multi-upfloater handle any other pairing errors
+            if(upfloaters.empty()) floater_required = false;
+            this->logExplanation("Picking the next upfloater on the list of upfloaters to try on the list: player with ID = " + std::to_string(floater.getID()) + ", Name = " + floater.getName());
             // recreate lower groups
+            this->logExplanation("Removing upfloater from lower score group...");
             LinkedListNode ng = this->makeNewGroups(*next_group_use, {floater.getID()}, &w_copy, &b_copy);
             delete next_group_use; // get rid of the old memory
             next_group_use = new LinkedListNode(ng);
             
             // sort new group as necessary
             if(floater.getDueColor() == Color::WHITE) {
+                this->logExplanation("Upfloater has the due color White. Inserting this player into White Seekers and resorting this group again...");
 //                w_copy.push_back(floater);
                 // re-sort white seekers as needed
                 this->sortGroupARO(&w_copy, 0, ((int) w_copy.size()) - 1);
+                this->logPlayers(w_copy, "Group after inserting upfloater and sorting by ARO...");
             } else {
 //                b_copy.push_back(floater);
                 // re-sort black seekers as needed
+                this->logExplanation("Upflaoter has the due color Black. Inserting this player into Black Seekers and resorting this group again...");
                 Utils::sortPlayersRating(&b_copy, 0, ((int) b_copy.size()) - 1);
+                this->logPlayers(b_copy, "Group after inserting upfloater and sorting by pairing number...");
             }
+            
+            this->logScoreGroup(w_copy, b_copy, "### Score Group View After Inserting Upfloater");
+        }*/
+        if(floater_required) {
+            // find best set of upfloaters to move
+            this->logExplanation("Searching for optimal set of upfloaters...");
+            bool failure = false;
+            std::set<int> up = this->findOptimalUpfloaters(w_copy, b_copy, *next_group_use, failure);
+            
+            // were we successful?
+            if(failure) {
+                // nothing more can be done from here
+                this->logExplanation("No good set of upfloaters possible to satisfy pairings! Backtracking to previous group to try to fix this error...");
+                this->pairing_error = true;
+                if(next_group_use != nullptr) delete next_group_use;
+                break;
+            }
+            
+            this->logExplanation("Find a good set of upfloaters to satisfy all pairing criteria! Inserting them into the score group...");
+            
+            // recreate the groups
+            LinkedListNode new_groups = this->makeNewGroups(*next_group_use, up, &w_copy, &b_copy);
+            delete next_group_use;
+            next_group_use = new LinkedListNode(new_groups);
+            
+            // sort both groups again
+            this->sortGroupARO(&w_copy, 0, ((int) w_copy.size()) - 1);
+            std::sort(b_copy.begin(), b_copy.end(), [](const Player &a, const Player &b) {
+                return a.getID() < b.getID();
+            });
+            this->logScoreGroup(w_copy, b_copy, "### Score Group View After Inserting Upfloater(s)");
         }
         
-        if(pairing_failure_upfloaters) {
+        /*if(pairing_failure_upfloaters) {
             // find the best upfloaters
             bool failure = false;
+            this->logExplanation("Multiple upfloaters are needed to make the pairings work for this section (since there is no other way of pairing this section without the use of upfloaters). Picking upfloaters...");
+            if(this->enable_logging) {
+                std::vector<Player> temp = this->findUpfloaters(*next_group_use, 0);
+                
+                // now we just log temp
+                this->logPlayers(temp, "Found list of upfloaters as given below. Keep moving the minimum number of upfloaters (from this list) to this score group until all pairings in this score group can be satisfied.");
+            }
             std::set<int> up = this->findMultiUpfloaters(w_copy, b_copy, *next_group_use, failure);
             
             // check if this doesn't work
             if(failure) {
+                this->logExplanation("No combination of upfloaters satisfies pairings in this group and lower! Backtracking to previous group to try to fix this error...");
                 // nothing more can be done
                 this->pairing_error = true;
                 if(next_group_use != nullptr) delete next_group_use;
@@ -2537,6 +3073,7 @@ std::vector<CPPDubovSystem::Match> CPPDubovSystem::Tournament::makePairingForGro
             }
             
             // insert into groups
+            this->logExplanation("Removing upfloaters from the lower score groups they were in...");
             LinkedListNode new_groups = this->makeNewGroups(*next_group_use, up, &w_copy, &b_copy);
             delete next_group_use;
             
@@ -2544,7 +3081,11 @@ std::vector<CPPDubovSystem::Match> CPPDubovSystem::Tournament::makePairingForGro
             
             this->sortGroupARO(&w_copy, 0, ((int) w_copy.size()) - 1);
             Utils::sortPlayersRating(&b_copy, 0, ((int) b_copy.size()) - 1);
-        }
+            
+            this->logPlayers(w_copy, "White Seekers after inserting upfloaters and sorting by ARO");
+            this->logPlayers(b_copy, "Black Seekers after inserting upfloaters and sorting by pairing number");
+            this->logScoreGroup(w_copy, b_copy, "### Score Group View After Inserting Upfloaters");
+        }*/
         
         // attempt to pair the groups
         bool error_on_pair = false;
@@ -2552,17 +3093,22 @@ std::vector<CPPDubovSystem::Match> CPPDubovSystem::Tournament::makePairingForGro
         
         // check for errors
         if(error_on_pair) {
+            this->logExplanation("Pairings could not be completed for score group!");
             if(floater_required) {
                 // try another floater
+                this->logExplanation("Trying a different upfloater to see if pairings will be satisfied with this different upfloater...");
                 this->pairing_error = false; // reset as necessary
                 if(next_group_use != nullptr) delete next_group_use;
                 continue;
             }
+            floater_required = true;
             // we must extract the same number of upfloaters as there are in the group
-            if(upfloaters.size() == 0) {
+            /*if(upfloaters.size() == 0) {
+                this->logExplanation("Trying to get upfloaters to make pairing in this group possible...");
                 // make sure that there is a next group
                 if(g->next == nullptr) {
                     // nothing more can be done by this point
+                    this->logExplanation("Lower score group doesn't exist! Backtracking to previous group to try to fix this error...");
                     this->pairing_error = true;
                     break;
                 }
@@ -2570,25 +3116,29 @@ std::vector<CPPDubovSystem::Match> CPPDubovSystem::Tournament::makePairingForGro
                 this->pairing_error = false;
                 delete next_group_use;
                 continue;
-            }
+            }*/
             if(next_group_use != nullptr) delete next_group_use;
             continue;
         }
         
         // merge games
+        this->logExplanation("Pairing for group completed successfully!");
         this->mergeMatches(games_got, &games);
         
         // try pairing next group lower
 //        std::vector<Match> lower = this->makePairingForGroup(g->next, pairing_round);
+        this->logExplanation("Attempting to pair next group...");
         std::vector<Match> lower = this->makePairingForGroup(next_group_use, pairing_round);
         
         // check for errors as necessary
         if(this->pairing_error) {
+            this->logExplanation("Pairing error occured in one of the lower score groups!");
             // clear merged matches
             games.clear();
             // check if this section required a floater previously
             if(floater_required) {
                 // we can try another floater, so continue
+                this->logExplanation("Trying a different upfloater to see if pairings will be satisfied with this different upfloater...");
                 this->pairing_error = false;
                 if(next_group_use != nullptr) delete next_group_use;
                 continue;
@@ -2597,16 +3147,21 @@ std::vector<CPPDubovSystem::Match> CPPDubovSystem::Tournament::makePairingForGro
 //             we need to extract some floaters to complete the pairing
 //             C.5 states to minimize the number of upfloaters
 //             so gather the next to available upfloaters
-            if(upfloaters.empty()) {
-                if(g->next == nullptr) {
-                    this->pairing_error = true;
-                    break;
-                }
-                pairing_failure_upfloaters = true;
-                this->pairing_error = false;
-                delete next_group_use;
-                continue;
-            }
+//            if(upfloaters.empty()) {
+//                this->logExplanation("Trying to get upfloaters to make pairing in this group possible...");
+//                if(g->next == nullptr) {
+//                    this->logExplanation("Lower score group doesn't exist! Backtracking to previous group to try to fix this error...");
+//                    this->pairing_error = true;
+//                    break;
+//                }
+//                pairing_failure_upfloaters = true;
+//                this->pairing_error = false;
+//                delete next_group_use;
+//                continue;
+//            }
+            floater_required = true;
+            if(next_group_use != nullptr) delete next_group_use;
+            continue;
             
 //             make sure we still have some upfloaters left
 //            if(((int) upfloaters.size()) == 1) {
@@ -2614,12 +3169,13 @@ std::vector<CPPDubovSystem::Match> CPPDubovSystem::Tournament::makePairingForGro
 //                break;
 //            }
             
-            if(pairing_failure_upfloaters) {
-                // we can continue as upfloaters are already up
-                this->pairing_error = false;
-                if(next_group_use != nullptr) delete next_group_use;
-                continue;
-            }
+//            if(pairing_failure_upfloaters) {
+//                // we can continue as upfloaters are already up
+//                this->logExplanation("Trying another set of upfloaters...");
+//                this->pairing_error = false;
+//                if(next_group_use != nullptr) delete next_group_use;
+//                continue;
+//            }
         }
         
         // merge
@@ -2629,6 +3185,8 @@ std::vector<CPPDubovSystem::Match> CPPDubovSystem::Tournament::makePairingForGro
         this->pairing_error = false;
         
         delete next_group_use;
+        
+        this->logExplanation("Pairing successfully completed for this score group and all the lower ones!");
     }
     
     // backtrack
@@ -2642,9 +3200,19 @@ std::vector<CPPDubovSystem::Match> CPPDubovSystem::Tournament::makePairingForGro
 
 std::vector<CPPDubovSystem::Match> CPPDubovSystem::Tournament::makeSubsequent(int pairing_round) {
     std::vector<Match> games;
+    // set up logger
+    this->logger.clear();
+    this->logExplanation("CPPDubovSystem (https://github.com/MichaelVShapiro/CPPDubovSystem) -- Explanation of pairings.");
     // sort players
-    Utils::sortPlayersRating(&this->players, 0, this->player_count - 1);
-    this->sortPlayersPoints(&this->players, 0, this->player_count - 1);
+    this->logExplanation("Sort players into respective score groups (sorted by points then by pairing number)");
+//    Utils::sortPlayersRating(&this->players, 0, this->player_count - 1);
+//    this->sortPlayersPoints(&this->players, 0, this->player_count - 1);
+    auto global_sorter = [](const Player &p1, const Player &p2) {
+        if(p1.getPoints() != p2.getPoints()) return p1.getPoints() > p2.getPoints();
+        
+        return p1.getID() < p2.getID();
+    };
+    std::sort(this->players.begin(), this->players.end(), global_sorter);
     
     // handle byes as necessary
     if(((int) this->players.size()) % 2 > 0) {
@@ -2652,6 +3220,7 @@ std::vector<CPPDubovSystem::Match> CPPDubovSystem::Tournament::makeSubsequent(in
     }
     
     // initialize due colors for players
+    this->logExplanation("Computing due colors, due color strengths, and ARO for all players.");
     this->initPlayers();
     
     // make groups
@@ -2664,14 +3233,17 @@ std::vector<CPPDubovSystem::Match> CPPDubovSystem::Tournament::makeSubsequent(in
         // since just about anybody can get a bye, we need to constantly keep trying to give different players the bye until we get a valid set of pairings
         LinkedList groups;
         LinkedListNode* curr = nullptr; // just a temporary value
+        this->logExplanation("Odd number of players in the tournament! Picking the player who should get the BYE by following rule 3.1...");
         while(this->bye_queue.size() > 0) {
             // remove bye player
             Player p_bye;
             int bye_p = this->removeByePlayer(&this->players, this->bye_queue[0], &p_bye);
             this->bye_queue.erase(this->bye_queue.begin());
             this->player_count -= 1;
+            this->logExplanation("Trying to give player BYE: " + p_bye.getName() + " (ID = " + std::to_string(p_bye.getID()) + ")");
             groups = this->makeGroups();
             curr = groups.getHead();
+            this->logExplanation("Attempting to pair tournament...");
             games = this->makePairingForGroup(curr, pairing_round);
             
             // put bye player back
@@ -2680,6 +3252,7 @@ std::vector<CPPDubovSystem::Match> CPPDubovSystem::Tournament::makeSubsequent(in
             
             // check for errors
             if(this->pairing_error) {
+                this->logExplanation("Pairings cannot be generated! Trying to give another player a BYE and do pairings again...");
                 // put bye player back and try dequeing another bye player
                 this->pairing_error = false;
                 games.clear();
@@ -2732,6 +3305,8 @@ std::vector<CPPDubovSystem::Match> CPPDubovSystem::Tournament::makeSubsequent(in
         };
         
         std::sort(games.begin(), games.end(), sort_pairings);
+    } else {
+        this->logExplanation("No valid pairing exists!");
     }
     
     return games;
@@ -2778,8 +3353,14 @@ std::vector<CPPDubovSystem::Match> CPPDubovSystem::Tournament::generatePairings(
         return this->generatePairings(r);
     }
     // first sort all players properly
-    Utils::sortPlayersRating(&this->players, 0, ((int) this->players.size()) - 1);
-    this->sortPlayersPoints(&this->players, 0, ((int) this->players.size()) - 1);
+//    Utils::sortPlayersRating(&this->players, 0, ((int) this->players.size()) - 1);
+//    this->sortPlayersPoints(&this->players, 0, ((int) this->players.size()) - 1);
+    std::sort(this->players.begin(), this->players.end(), [](const Player &a, const Player &b){
+        // compare points as primary sorting
+        if(a.getPoints() != b.getPoints()) return a.getID() < b.getID();
+        
+        return a.getPoints() > b.getPoints();
+    });
     
     // insert data into baku acceleration and apply virtual points
     BakuAcceleration ba(&this->players, r, this->total_rounds);
@@ -3342,7 +3923,10 @@ std::string CPPDubovSystem::Tournament::simulateTournament(int p_count, int max_
     }
     
     // now that the simulation of rounds is done, sort the players and insert their final rankings
-    Utils::sortPlayersRating(&normal_player, 0, ((int) normal_player.size()) - 1);
+//    Utils::sortPlayersRating(&normal_player, 0, ((int) normal_player.size()) - 1);
+    std::sort(normal_player.begin(), normal_player.end(), [](const Player &a, const Player &b) {
+        return a.getID() < b.getID();
+    });
     sortPlayersPoints(&normal_player, 0, ((int) normal_player.size()) - 1);
     
     for(int i = 0; i < normal_player.size(); i++) {

@@ -31,7 +31,7 @@
  */
 void helpDisplay() {
     std::cout << "--------FIDE DUBOV SYSTEM PAIRING ENGINE--------" << std::endl;
-    std::cout << "--------------------Version 2.1.2---------------" << std::endl;
+    std::cout << "--------------------Version 2.2-----------------" << std::endl;
     std::cout << "---------------Author: Michael Shapiro----------" << std::endl;
     std::cout << "-------------------Help Section-----------------" << std::endl;
     std::cout << "\n\n\n\n";
@@ -47,6 +47,7 @@ void helpDisplay() {
     std::cout << "|--fpc        |Free Pairings Checker        |" << std::endl;
     std::cout << "|--fpc_rounds |(for fpc) Round to check     |" << std::endl;
     std::cout << "|--output     |Output pairings to a file    |" << std::endl;
+    std::cout << "|--explain    |Explain how to get pairings  |" << std::endl;
 }
 
 /**
@@ -57,6 +58,10 @@ void exampleUsage() {
     std::cout << "./CPPDubovSystem --pairings \"path/to/file.trf\"" << std::endl;
     std::cout << "OR" << std::endl;
     std::cout << "./CPPDubovSystem --pairings \"path/to/file.trf\" --output \"path/to/output.csv\"" << std::endl;
+    std::cout << "OR" << std::endl;
+    std::cout << "./CPPDubovSystem --pairings \"path/to/file.trf\" --output \"path/to/output.csv\" --explain" << std::endl;
+    std::cout << "OR" << std::endl;
+    std::cout << "./CPPDubovSystem --pairings \"path/to/file.trf\" --output \"path/to/output.csv\" --explain \"path/to/output_explanation.txt\"" << std::endl;
     std::cout << "FILE MUST BE IN TRF16 FORMAT!\n\n";
     std::cout << "EXAMPLE USAGE FOR RANDOM TOURNAMENT GENERATOR\n";
     std::cout << "./CPPDubovSystem --rtg path/to/trf/output.trf --p_count 10 --rtg_rounds 5\n\n";
@@ -160,7 +165,7 @@ int main(int argc, const char * argv[]) {
             std::cerr << "Missing TRF file path" << std::endl;
             return -1;
         } else if(passed == "--version") {
-            std::cout << "CPPDubovSystem -- Version 2.1.2" << std::endl;
+            std::cout << "CPPDubovSystem -- Version 2.2" << std::endl;
             return 0;
         }
         std::cerr << "Unexpected command passed in. Execute --help command or --sample for sample usage" << std::endl;
@@ -239,6 +244,26 @@ int main(int argc, const char * argv[]) {
         return 3;
     }
     
+    // configure explanation if needed
+    std::string explanation_output_path;
+    bool enable_explanation = false;
+    if(argc >= 6) {
+        std::string expect_explain = argv[5];
+        if(expect_explain != "--explain") {
+            std::cerr << "Expected --explain for fifth parameter in call." << std::endl;
+            return -1;
+        }
+        enable_explanation = true;
+        // is there an output path given?
+        if(argc > 7) {
+            std::cerr << "Too many arguments given." << std::endl;
+            return -1;
+        }
+        if(argc == 7)
+            explanation_output_path = argv[6];
+        trfTournament.enableExplanationLogger(true);
+    }
+    
     std::vector<CPPDubovSystem::Match> m;
     
     // check if acceleration was invoked
@@ -250,6 +275,19 @@ int main(int argc, const char * argv[]) {
         m = trfTournament.generatePairings(rounds_done + 1);
     }
     
+    // output explanation logger regardless of pairing success or failure
+    if(enable_explanation) {
+        CPPDubovSystem::ExplainLogger explanation = trfTournament.getExplainLogger();
+        
+        // quickly output file if needed
+        if(!explanation_output_path.empty()) {
+            explanation.setOutputLogFile(explanation_output_path);
+            explanation.outputToFile();
+        } else {
+            // else we just output directly into the console
+            std::cout << explanation.getOutputExplanation() << "\n\n" << std::endl;
+        }
+    }
     
     // check for errors as needed
     if(trfTournament.pairingErrorOccured()) {
